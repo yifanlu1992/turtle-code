@@ -23,63 +23,46 @@ modData = netCDF4.Dataset(url)
 modLons = modData.variables['lon_rho'][:]
 modLats = modData.variables['lat_rho'][:]
 
-obsData = pd.read_csv('ctdWithModTempByDepth.csv')
-tf_index = np.where(obsData['TF'].notnull())[0]
-modTemp = pd.Series(str2ndlist(obsData['modTempByDepth'][tf_index],bracket=True), index=tf_index) # if str has '[' and ']', bracket should be True
-obsTemp = pd.Series(str2ndlist(obsData['TEMP_VALS'][tf_index]), index=tf_index)
-obsDepth = pd.Series(str2ndlist(obsData['TEMP_DBAR'][tf_index]), index=tf_index)
-modLayer = pd.Series(str2ndlist(obsData['modDepthLayer'][tf_index], bracket=True), index=tf_index)
-depth_bottom=[]
-for i in tf_index:
-    d_each=(obsDepth[i][-1]-obsDepth[i][0]) *1.0/((modLayer[i][0]-modLayer[i][-1])+0.00000000000000000000001)# except divded by zero 
-    if  36*d_each<200:   
-        depth_bottom.append(36*d_each)
-    else:
-        depth_bottom.append(200)
-depth_bottom=pd.Series(depth_bottom,index=tf_index)  
-indx=[]
-modtemp=[]
-obstemp=[]
-for i in modTemp.index:
-    if modTemp[i][-1]<100:
-        indx.append(i)
-        modtemp.append(modTemp[i][-1])
-        obstemp.append(obsTemp[i][-1])
-modtemp=pd.Series(modtemp,index=indx)
-obstemp=pd.Series(obstemp,index=indx)
-depth_bottom=pd.Series(depth_bottom[indx],index=indx)
-obsLon, obsLat = obsData['LON'][indx], obsData['LAT'][indx]      #use for plotting depth line
-modNearestIndex = pd.Series(str2ndlist(obsData['modNearestIndex'][indx], bracket=True), index=indx)
+obsData = pd.read_csv('ctdWithdepthofbottom.csv')
+modTemp = pd.Series(str2ndlist(obsData['modTempByDepth'],bracket=True), index=obsData.index) # if str has '[' and ']', bracket should be True
+obsTemp = pd.Series(str2ndlist(obsData['TEMP_VALS']), index=obsData.index)
+obsDepth = pd.Series(str2ndlist(obsData['TEMP_DBAR']), index=obsData.index)
+depthBottom = pd.Series(obsData['depth_bottom'],index=obsData.index)
+for i in obsData.index:
+    if depthBottom[i]>200:
+        depthBottom[i]=200     #Just a little points are deeper than 200m.Removing them can plot depth better
+ 
+obsLon, obsLat = obsData['LON'], obsData['LAT']    #use for plotting depth line
+modNearestIndex = pd.Series(str2ndlist(obsData['modNearestIndex'], bracket=True), index=obsData.index)
 data = pd.DataFrame({'obstemp': obsTemp,'modtemp':modTemp, 
                      'nearestIndex': modNearestIndex,
-                     'depth':obsDepth,'layer':modLayer},index=indx)
-r1 = range(0, 82, 1)
-r2 = range(0, 130, 1)  
+                     'obsdepth':obsDepth,'moddepth':depthBottom},index=obsData.index)
+ 
 lon_m=[]
 lat_n=[]
 dataNum,sumdata,abs_sumdata,rms = [[],[],[],[]],[[],[],[],[]],[[],[],[],[]],[[],[],[],[]]
-mean,abs_mean,rms,RMS=[[],[],[],[]],[[],[],[],[]],[[],[],[],[]],[[],[],[],[]]
+mean,abs_mean,rms=[[],[],[],[]],[[],[],[],[]],[[],[],[],[]]
 Mean,Absmean,Rms=[[],[],[],[]],[[],[],[],[]],[[],[],[],[]]
 for k in range(4):
     for i in range(82):  # just create a list with all zero to calculate error number 
-        j = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+        j=[0]*130
         dataNum[k].append(j)                  
     for i in range(82):     # just create a list with all zero to calculate error number 
-        j = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+        j=[0]*130
         sumdata[k].append(j)            
     for i in range(82):     # just create a list with all zero to calculate error number 
-        j = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+        j=[0]*130
         abs_sumdata[k].append(j)                     
     for i in range(82):     # just create a list with all zero to calculate error number 
-        j = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+        j=[0]*130
         rms[k].append(j)
     
     for i in data.index:
-        m = whichArea(data['nearestIndex'][i][0], r1)
-        n = whichArea(data['nearestIndex'][i][1], r2)
+        m = int(data['nearestIndex'][i][0])
+        n = int(data['nearestIndex'][i][1])
         for j in range(len(data['obstemp'][i])):
             if k<3:            
-                if k*25<data['depth'][i][j]<(k+1)*25:
+                if k*25<data['obsdepth'][i][j]<(k+1)*25:
                     dataNum[k][m][n] += 1 
                 
                     diff=np.array(data['obstemp'][i][j])-np.array(data['modtemp'][i][j])
@@ -91,7 +74,7 @@ for k in range(4):
                     dif=np.sum(diff*diff)
                     rms[k][m][n]=rms[k][m][n]+dif 
             if k==3:
-                if k*25<data['depth'][i][j]:
+                if k*25<data['obsdepth'][i][j]:
                     dataNum[k][m][n] += 1 
                 
                     diff=np.array(data['obstemp'][i][j])-np.array(data['modtemp'][i][j])
@@ -104,31 +87,30 @@ for k in range(4):
                     rms[k][m][n]=rms[k][m][n]+dif 
     mean[k]=np.array(sumdata[k])/(np.array(dataNum[k])*1.0)            #calculate mean error
     abs_mean[k]=np.array(abs_sumdata[k])/(np.array(dataNum[k])*1.0)    #calculate absolulate mean error
-    rms[k]=np.array(rms[k])/(np.array(dataNum[k])*1.0)
-    RMS[k]=np.sqrt(np.array(rms[k]))                                   #calculate rms
+    rms[k]=np.sqrt(np.array(rms[k])/(np.array(dataNum[k])*1.0))        #calculate rms 
    
     for i in range(82):
         for j in range(130):
             Mean[k].append(mean[k][i][j])
             Absmean[k].append(abs_mean[k][i][j])
-            Rms[k].append(RMS[k][i][j])
+            Rms[k].append(rms[k][i][j])
 modLon=[]
 modLat=[]
 for i in range(len(modLons)):
     for j in range(len(modLons[i])):
         modLon.append(modLons[i][j])
-        modLat.append(modLats[i][j])
+        modLat.append(modLats[i][j])       #use for griddata
 
 lonsize = [-79.5, -72.5]
-latsize = [34.5, 41]
+latsize = [34.5, 41]                      #range of basemap
 lon_i = np.linspace(lonsize[0],lonsize[1],1000)
-lat_i = np.linspace(latsize[0],latsize[1],1000)
+lat_i = np.linspace(latsize[0],latsize[1],1000)  #use for mean error,absolute mean error and rms
 lon_is = np.linspace(lonsize[0],lonsize[1],100)
-lat_is = np.linspace(latsize[0],latsize[1],100)
-depth_i=griddata(np.array(obsLon),np.array(obsLat),np.array(depth_bottom),lon_is,lat_is)
+lat_is = np.linspace(latsize[0],latsize[1],100)   #use for depth line
+depth_i=griddata(np.array(obsLon),np.array(obsLat),np.array(depthBottom),lon_is,lat_is)
 title=['mean_error','abs_mean_error','rms']
 depth_zones=['0~25','25~50','50~75','75~100']
-mean_i,abs_mean_i,RMS_i=[[],[],[],[]],[[],[],[],[]],[[],[],[],[]]
+mean_i,abs_mean_i,RMS_i=[[],[],[],[]],[[],[],[],[]],[[],[],[],[]]  #use for loop
 for i in range(4):
     mean_i[i] = griddata(np.array(modLon),np.array(modLat),np.array(Mean[i]),lon_i,lat_i)
     abs_mean_i[i]=griddata(np.array(modLon),np.array(modLat),np.array(Absmean[i]),lon_i,lat_i)

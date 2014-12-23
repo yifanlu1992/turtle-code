@@ -22,38 +22,20 @@ lonA, latA = lons[81][0], lats[81][0] # Vertex of ROMS area.
 lonB, latB = lons[81][129], lats[81][129]
 lonC, latC = lons[0][129], lats[0][129]
 lonD, latD = lons[0][0], lats[0][0]
+obsData = pd.read_csv('ctdWithdepthofbottom.csv')
+modTemp = pd.Series(str2ndlist(obsData['modTempByDepth'],bracket=True), index=obsData.index) # if str has '[' and ']', bracket should be True
+obsTemp = pd.Series(str2ndlist(obsData['TEMP_VALS']), index=obsData.index)
+obsDepth = pd.Series(str2ndlist(obsData['TEMP_DBAR']), index=obsData.index)
+obsTime = pd.Series(np_datetime(obsData['END_DATE']),index=obsData.index)
+depthBottom = pd.Series(obsData['depth_bottom'],index=obsData.index)
+for i in obsData.index:
+    if depthBottom[i]>200:
+        depthBottom[i]=200     #Just a little points are deeper than 200m.Removing them can plot depth betterex)
+obsLons, obsLats = obsData['LON'], obsData['LAT']
 
-obsData = pd.read_csv('ctdWithModTempByDepth.csv')
-tf_index = np.where(obsData['TF'].notnull())[0]
-modTemp = pd.Series(str2ndlist(obsData['modTempByDepth'][tf_index],bracket=True), index=tf_index) # if str has '[' and ']', bracket should be True
-obsTemp = pd.Series(str2ndlist(obsData['TEMP_VALS'][tf_index]), index=tf_index)
-obsDepth = pd.Series(str2ndlist(obsData['TEMP_DBAR'][tf_index]), index=tf_index)
-modLayer = pd.Series(str2ndlist(obsData['modDepthLayer'][tf_index], bracket=True), index=tf_index)
-depth_bottom=[]        #calculate depth of bottom
-for i in tf_index:
-    d_each=(obsDepth[i][-1]-obsDepth[i][0]) *1.0/((modLayer[i][0]-modLayer[i][-1])+0.00000000000000000000001)# except divded by zero 
-    if  36*d_each<200:   
-        depth_bottom.append(36*d_each)
-    else:
-        depth_bottom.append(200)      # Just one point is deeper than 200m.
-depth_bottom=pd.Series(depth_bottom,index=tf_index)  
-
-indx=[]             #get rid of some wrong data
-modtemp=[]
-obstemp=[]
-for i in modTemp.index:
-    if modTemp[i][-1]<100:
-        indx.append(i)
-        modtemp.append(modTemp[i][-1])
-        obstemp.append(obsTemp[i][-1])
-obsTime = pd.Series(np_datetime(obsData['END_DATE'][indx]), index=indx)
-obsLon, obsLat = obsData['LON'][indx], obsData['LAT'][indx]
-modtemp=pd.Series(modtemp,index=indx)
-obstemp=pd.Series(obstemp,index=indx)
-depth_bottom=pd.Series(depth_bottom[indx],index=indx)
-lon_i = np.linspace(-78,-69,1000)
-lat_i = np.linspace(33,42,1000)
-depth_i=griddata(np.array(obsLon),np.array(obsLat),np.array(depth_bottom),lon_i,lat_i)
+lon_i = np.linspace(-78,-69,100)
+lat_i = np.linspace(33,42,100)
+depth_i=griddata(np.array(obsLons),np.array(obsLats),np.array(depthBottom),lon_i,lat_i)
 SPRING=[]
 SUMMER=[]
 FALL=[]
@@ -108,13 +90,11 @@ for k in range(len(season)):
         nearestIndex.extend([modNearestIndex[a]] * indx.size)    # calculate all error data
     '''
     for i in data.index:
-        if data['layer'][i][0]-data['layer'][i][-1]<>0:
-            d_each=(data['depth'][i][-1]-data['depth'][i][0]) *1.0/(data['layer'][i][0]-data['layer'][i][-1])   
-            if 36*d_each-data['depth'][i][-1]<10:
-                  diff = np.array(data['obstemp'][i][-1]) - np.array(data['modtemp'][i][-1])
-                  indx = np.where(abs(diff)>criteria)[0]
-                  if not indx.size: continue
-                  nearestIndex.extend([modNearestIndex[i]] * indx.size)       #calculate error data in bottom
+        if abs(obsDepth[i][-1]-depthBottom[i])<10:     #diff<10m,wo can use the data
+            diff = np.array(data['obstemp'][i][-1]) - np.array(data['modtemp'][i][-1])
+            indx = np.where(abs(diff)>criteria)[0]
+            if not indx.size: continue
+            nearestIndex.extend([modNearestIndex[i]] * indx.size)       #calculate error data in bottom
     
     for b in nearestIndex:
         m = whichArea(b[0], r1)
@@ -158,11 +138,9 @@ for k in range(len(season)):
         nearestIndex.extend([modNearestIndex[i]] * m)   # calculate all data 
     '''
     for i in data.index:
-        if data['layer'][i][0]-data['layer'][i][-1]<>0:
-            d_each=(data['depth'][i][-1]-data['depth'][i][0]) *1.0/(data['layer'][i][0]-data['layer'][i][-1])   
-            if 36*d_each-data['depth'][i][-1]<10:
-                m = len([data['obstemp'][i][-1]])
-                nearestIndex.extend([modNearestIndex[i]] * m)   #calculate all data in bottom
+        if abs(obsDepth[i][-1]-depthBottom[i])<10:     #diff<10m,wo can use the data
+            m = len([data['obstemp'][i][-1]])
+            nearestIndex.extend([modNearestIndex[i]] * m)   #calculate all data in bottom
     
     for i in nearestIndex:
         m = whichArea(i[0], r1)

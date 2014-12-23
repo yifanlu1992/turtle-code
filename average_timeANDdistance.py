@@ -23,13 +23,13 @@ for i in range(length):
         if obsturtle_id[j]==obsturtle_ids[i]:
             ids[i].append(j)   #collect index of each turtle 
 time_aves=[]
-dist_aves=[]
+dist_aves=[]        #collect all average
 for i in range(len(ids)):
     obs=obsData.ix[ids[i]]    
     goodTime=pd.Series(np_datetime(obs['END_DATE']), index=ids[i])
     goodlons=pd.Series(obs['LON'], index=ids[i])
     goodlats=pd.Series(obs['LAT'], index=ids[i])
-    d=pd.DataFrame({'Time':goodTime,'lon':goodlons,'lat':goodlats},index=ids[i])
+    d=pd.DataFrame({'Time':goodTime,'lon':goodlons,'lat':goodlats},index=ids[i])   #each turtle`s modtemp and obstemp
     d=d.sort(['Time'])
     d.index=range(len(d))
     diff_dist=[]
@@ -42,7 +42,7 @@ for i in range(len(ids)):
         t=(d['Time'][i+1]-d['Time'][i]).total_seconds()/3600
         diff_time.append(t)
     time_ave=int(np.mean(diff_time))
-    dist_ave=int(np.mean(diff_dist))
+    dist_ave=int(np.mean(diff_dist))    #each turtle`s average
     time_aves.append(time_ave)
     dist_aves.append(dist_ave)
 ave_time=round(np.mean(np.array(time_aves)),2)

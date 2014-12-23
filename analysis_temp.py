@@ -9,8 +9,8 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from turtleModule import str2ndlist
-
-obsData=pd.read_csv('ctdwithoutbad.csv', index_col=0)
+###############################################################
+obsData=pd.read_csv('ctdwithoutbad.csv', index_col=0)   
 obsturtle_id=pd.Series(obsData['PTT'],index=obsData.index)
 obsturtle_ids=obsturtle_id.unique()
 length=len(obsturtle_ids)                #length is number of turtles 
@@ -27,17 +27,17 @@ obsmaxs=[]
 obsmeans=[]
 modmins=[]
 modmaxs=[]
-modmeans=[]
+modmeans=[]                        # collect min,max and mean of model and observe temperature
 for i in range(len(ids)):
     obsdata=obsData.ix[ids[i]] 
     goodobstemp=pd.Series(str2ndlist(obsdata['TEMP_VALS']), index=ids[i])
-    goodmodtemp=pd.Series(str2ndlist(obsdata['modTempByDepth'],bracket=True), index=ids[i])
+    goodmodtemp=pd.Series(str2ndlist(obsdata['modTempByDepth'],bracket=True), index=ids[i]) #each turtle`s modtemp and obstemp
     obsmin=[]
     obsmax=[]
     obsmean=[]
     modmin=[]
     modmax=[]
-    modmean=[]    
+    modmean=[]                         
     for j in ids[i]:
         obsmin.append(np.min(np.array(goodobstemp[j]))),modmin.append(np.min(np.array(goodmodtemp[j])))
         obsmax.append(np.max(np.array(goodobstemp[j]))),modmax.append(np.max(np.array(goodmodtemp[j])))
@@ -48,7 +48,7 @@ for i in range(len(ids)):
     obsmeans.append(np.mean(np.array(obsmean)))
     modmins.append(np.min(np.array(modmin)))
     modmaxs.append(np.max(np.array(modmax)))
-    modmeans.append(np.mean(np.array(modmean)))    #each turtle`s max,min,mean temperature
+    modmeans.append(np.mean(np.array(modmean)))    #each turtle`s max,min,mean modtemp and obstemp
 obsmins.sort()
 obsmaxs.sort()
 obsmeans.sort()
@@ -56,7 +56,7 @@ modmins.sort()
 modmaxs.sort()
 modmeans.sort()
 data=np.round([obsmins,obsmaxs,obsmeans,modmins,modmaxs,modmeans],0)
-data_str=['observe_min','observe_max','observe_mean','model_min','model_max','model_mean']
+data_str=['observe_min','observe_max','observe_mean','model_min','model_max','model_mean']  #use for loop
 
 for i in range(len(data)):
     fig=plt.figure()
@@ -65,7 +65,7 @@ for i in range(len(data)):
     y1=y1.sort_index()
     plt.bar(y.unique(),y1)
     if i==3:
-        plt.xlim([0,25])
+        plt.xlim([0,25])   #one data in modmins is smaller than 0
     plt.xlabel('temperature ',fontsize=20)
     plt.ylabel('quantity',fontsize=20)
     plt.ylim([0,max(y1)+2])

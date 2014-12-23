@@ -14,16 +14,13 @@ from datetime import datetime, timedelta
 from turtleModule import str2ndlist, np_datetime
 ###################################main code###################################
 criteria=3                   # criteria for rms
-obsData=pd.read_csv('ctdwithoutbad.csv')
+obsData=pd.read_csv('ctdWithdepthofbottom.csv')
 obsDepth=pd.Series(str2ndlist(obsData['TEMP_DBAR']),index=obsData.index)
-modLayer=pd.Series(str2ndlist(obsData['modDepthLayer'],bracket=True),index=obsData.index) # If str has '[' and ']', bracket should be True.
-modTemp=pd.Series(str2ndlist(obsData['modTempByDepth'],bracket=True),index=obsData.index)
+modDepth=pd.Series(obsData['depth_bottom'],index=obsData.index)
 indx=[]
 for i in obsData.index:
-    diff=(obsDepth[i][-1]-obsDepth[i][0])/(modLayer[i][0]-modLayer[i][-1]+0.000000000000000000000001)
-    if 36*diff-obsDepth[i][-1]<10:
-        if modTemp[i][-1]<100:                   
-            indx.append(i)                        #get rid of some wrong data
+    if abs(obsDepth[i][-1]-modDepth[i])<10:     #diff<10m,wo can use the data
+        indx.append(i)                                
 obsturtle_id=pd.Series(obsData['PTT'][indx],index=indx)        
 obsTemp=pd.Series(str2ndlist(obsData['TEMP_VALS'][indx]),index=indx)
 modTemp=pd.Series(str2ndlist(obsData['modTempByDepth'][indx],bracket=True),index=indx)
