@@ -4,7 +4,7 @@ Created on Mon Jan 26 09:06:18 2015
 
 @author: zhaobin
 """
-'make a movie about each turtle`s temperature'
+'make a movie about one turtle`s temperature'
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt

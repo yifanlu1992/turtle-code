@@ -74,7 +74,7 @@ for i in [0,2]:        #two seasons together plot.
     CS1=ax.contour(lon_is, lat_is,depth_i,1,colors = 'r',linestyles=':',linewidths=2)
     plt.colorbar(CS)
     #plt.scatter(np.array(obsLon),np.array(obsLat), marker='o', c='b', s=5, zorder=10)
-    ax.set_title('Model_'+season[i])
+    ax.set_title('mod_'+season[i])
     ax.annotate('100m depth',xy=(-75.289,35.0395),xytext=(-75.0034,34.9842),arrowprops=dict(facecolor='black'))    
     
     ax1 = fig.add_subplot(222)             #plot model temperature
@@ -84,7 +84,7 @@ for i in [0,2]:        #two seasons together plot.
     CS1=ax1.contour(lon_is, lat_is,depth_i,1,colors = 'r',linestyles=':',linewidths=2)
     plt.colorbar(CS)
     #plt.scatter(np.array(obsLon),np.array(obsLat), marker='o', c='b', s=5, zorder=10)
-    ax1.set_title('Observation_'+season[i])
+    ax1.set_title('obs_'+season[i])
     ax1.annotate('100m depth',xy=(-75.289,35.0395),xytext=(-75.0034,34.9842),arrowprops=dict(facecolor='black'))  
 
     
@@ -100,7 +100,7 @@ for i in [0,2]:        #two seasons together plot.
     CS1=ax2.contour(lon_is, lat_is,depth_i,1,colors = 'r',linestyles=':',linewidths=2)
     plt.colorbar(CS)
     #plt.scatter(np.array(obsLon),np.array(obsLat), marker='o', c='b', s=5, zorder=10)
-    ax2.set_title('Model_'+season[i+1])
+    ax2.set_title('mod_'+season[i+1])
     ax2.annotate('100m depth',xy=(-75.289,35.0395),xytext=(-75.0034,34.9842),arrowprops=dict(facecolor='black'))    
     
     ax3 = fig.add_subplot(224)                #plot model temperature
@@ -110,7 +110,7 @@ for i in [0,2]:        #two seasons together plot.
     CS1=ax3.contour(lon_is, lat_is,depth_i,1,colors = 'r',linestyles=':',linewidths=2)
     plt.colorbar(CS)
     #plt.scatter(np.array(obsLon),np.array(obsLat), marker='o', c='b', s=5, zorder=10)
-    ax3.set_title('Observation_'+season[i+1])
+    ax3.set_title('obs_'+season[i+1])
     ax3.annotate('100m depth',xy=(-75.289,35.0395),xytext=(-75.0034,34.9842),arrowprops=dict(facecolor='black'))  
     plt.savefig(season[i]+season[i+1]+'contour.png')
 plt.show()

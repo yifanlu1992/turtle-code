@@ -38,9 +38,9 @@ plt.legend(loc='best')
 plt.xlim([0,13]) 
 plt.xticks(range(13),fontsize=18)
 plt.yticks(fontsize=18)
-plt.xlabel('Month',fontsize=20)
-plt.ylabel('Quantity',fontsize=20)
-plt.title('Dives per month',fontsize=20)
+plt.xlabel('month',fontsize=20)
+plt.ylabel('quantity',fontsize=20)
+plt.title('number of dive,sum:12608',fontsize=20)
 
 fig = plt.figure()
 for i in range(5):
