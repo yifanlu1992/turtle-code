@@ -51,7 +51,8 @@ for k in range(len(temp_i)):
     CS = plt.contourf(lon_i, lat_i, temp_i[k], np.arange(0,30,1), cmap=plt.cm.rainbow,
                   vmax=abs(temp_i[k]).max(), vmin=-abs(temp_i[k]).max())
     CS1=plt.contour(lon_is, lat_is,depth_i,1,colors = 'r',linestyles=':')
-    plt.colorbar(CS)
+    cbar=plt.colorbar(CS)
+    cbar.ax.tick_params(labelsize=20)
     #plt.scatter(np.array(obsLon),np.array(obsLat), marker='o', c='b', s=5, zorder=10)
     ax.set_title(title[k],fontsize=30)
     ax.annotate('100m depth',xy=(-75.289,35.0395),xytext=(-75.0034,34.9842),arrowprops=dict(facecolor='black'))

@@ -118,16 +118,30 @@ for i in range(4):
     temp_i=[mean_i[i],abs_mean_i[i],RMS_i[i]]
     
     for k in range(len(title)):
-        fig = plt.figure()
-        ax = fig.add_subplot(111)
-        draw_basemap(fig, ax, lonsize, latsize)
-        CS = plt.contourf(lon_i, lat_i, temp_i[k], 15, cmap=plt.cm.rainbow,
+        if k==0:
+            fig = plt.figure()
+            ax = fig.add_subplot(111)
+            draw_basemap(fig, ax, lonsize, latsize)
+            CS = plt.contourf(lon_i, lat_i, temp_i[k], np.arange(-9,10,1), cmap=plt.cm.rainbow,
                   vmax=abs(temp_i[k]).max(), vmin=-abs(temp_i[k]).max())
-        CS1=plt.contour(lon_is, lat_is,depth_i,1,colors = 'r',linestyles=':')
-        ax.annotate('100m depth',xy=(-75.289,35.0395),xytext=(-75.0034,34.9842),arrowprops=dict(facecolor='black'))
-        cbar=plt.colorbar(CS)
-        cbar.ax.tick_params(labelsize=20)
-        #plt.scatter(np.array(obsLon),np.array(obsLat), marker='o', c='b', s=1, zorder=1)
-        plt.title(title[k]+'  DEPTH:'+depth_zones[i],fontsize=30)
-        plt.savefig('contourof'+title[k]+'_'+depth_zones[i]+'.png')
+            CS1=plt.contour(lon_is, lat_is,depth_i,1,colors = 'r',linestyles=':',linewidths=5)
+            ax.annotate('100m depth',xy=(-75.289,35.0395),xytext=(-75.0034,34.9842),arrowprops=dict(facecolor='black'),fontsize=20)
+            cbar=plt.colorbar(CS)
+            cbar.ax.tick_params(labelsize=30)
+            #plt.scatter(np.array(obsLon),np.array(obsLat), marker='o', c='b', s=1, zorder=1)
+            plt.title(title[k]+'  DEPTH:'+depth_zones[i],fontsize=30)
+            plt.savefig('contourof'+title[k]+'_'+depth_zones[i]+'.png')
+        if k>0:
+            fig = plt.figure()
+            ax = fig.add_subplot(111)
+            draw_basemap(fig, ax, lonsize, latsize)
+            CS = plt.contourf(lon_i, lat_i, temp_i[k], np.arange(0,9.2,0.5), cmap=plt.cm.rainbow,
+                  vmax=abs(temp_i[k]).max(), vmin=-abs(temp_i[k]).max())
+            CS1=plt.contour(lon_is, lat_is,depth_i,1,colors = 'r',linestyles=':',linewidths=5)
+            ax.annotate('100m depth',xy=(-75.289,35.0395),xytext=(-75.0034,34.9842),arrowprops=dict(facecolor='black'),fontsize=20)
+            cbar=plt.colorbar(CS)
+            cbar.ax.tick_params(labelsize=30)
+            #plt.scatter(np.array(obsLon),np.array(obsLat), marker='o', c='b', s=1, zorder=1)
+            plt.title(title[k]+'  DEPTH:'+depth_zones[i],fontsize=30)
+            plt.savefig('contourof'+title[k]+'_'+depth_zones[i]+'.png')
 plt.show()

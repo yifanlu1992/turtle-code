@@ -19,7 +19,7 @@ obsDepth=pd.Series(str2ndlist(obsData['TEMP_DBAR']),index=obsData.index)
 modDepth=pd.Series(obsData['depth_bottom'],index=obsData.index)
 indx=[]
 for i in obsData.index:
-    if abs(obsDepth[i][-1]-modDepth[i])<10:     #diff<10m,wo can use the data
+    if abs(obsDepth[i][-1]-modDepth[i])<10:     #diff<10m,we can use the data
         indx.append(i)                                
 obsturtle_id=pd.Series(obsData['PTT'][indx],index=indx)        
 obsTemp=pd.Series(str2ndlist(obsData['TEMP_VALS'][indx]),index=indx)
