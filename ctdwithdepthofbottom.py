@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 Created on Thu Nov 13 16:12:01 2014
-
+output two files:ctdwithoutbad_roms.csv and ctdWithdepthofbottom_roms.csv
 @author: zhaobin
 """
 from matplotlib.mlab import griddata
@@ -23,7 +23,7 @@ for j in tf_index:
         indx.append(j)
 obs=obsData.ix[indx]
 obs=obs.drop(['Unnamed: 0','Unnamed: 0.1'],axis=1)
-obs.to_csv('ctdwithoutbad.csv')
+obs.to_csv('ctdwithoutbad_roms.csv')
 ###############################################################################
 starttime = datetime(2013,07,10) # starttime and endtime can be any time that included by model, we just want a url to get "lon_rho", "lat_rho","h"in model.
 endtime = starttime + timedelta(hours=1)
@@ -41,5 +41,5 @@ for i in indx:
     m, n = int(modNearestIndex[i][0]), int(modNearestIndex[i][1])
     newH.append(moddepth[m][n])
 obs['depth_bottom']=pd.Series(newH,index=indx)
-obs.to_csv('ctdWithdepthofbottom.csv')
+obs.to_csv('ctdWithdepthofbottom_roms.csv')
 #obs=obs.drop(['Unnamed: 0','Unnamed: 0.1'],axis=1)
