@@ -2,7 +2,7 @@
 """
 Created on Tue Dec 16 09:44:44 2014
 
-@author: jmanning
+@author: zhaobin
 """
 'plot mean error,absolute mean error and rms of temperature of observe and model'
 from matplotlib.mlab import griddata
@@ -15,16 +15,19 @@ import math
 from turtleModule import str2ndlist,draw_basemap,whichArea
 import watertempModule as wtm  
 ###############################################################################
+'''
 starttime = datetime(2013,07,10)
 endtime = starttime + timedelta(hours=1)
 # starttime and endtime can be any time that included by model, we just want a url to get "lon_rho", "lat_rho" in model.
 tempObj = wtm.water_roms()
 url = tempObj.get_url(starttime, endtime)
+'''
+url='http://tds.marine.rutgers.edu:8080/thredds/dodsC/roms/espresso/2009_da/his'
 modData = netCDF4.Dataset(url)
 modLons = modData.variables['lon_rho'][:]
 modLats = modData.variables['lat_rho'][:] #the lon and lat are ROMS`s
 
-obsData = pd.read_csv('ctdWithdepthofbottom.csv')
+obsData = pd.read_csv('ctdWithdepthofbottom_roms.csv')
 modTemp = pd.Series(str2ndlist(obsData['modTempByDepth'],bracket=True), index=obsData.index) # if str has '[' and ']', bracket should be True
 obsTemp = pd.Series(str2ndlist(obsData['TEMP_VALS']), index=obsData.index)
 obsDepth = pd.Series(str2ndlist(obsData['TEMP_DBAR']), index=obsData.index)
@@ -60,7 +63,7 @@ for i in range(82):     # just create a list with all zero to calculate error nu
 
 for i in data.index:
     m=int(data['nearestIndex'][i][0])
-    n=int(data['nearestIndex'][i][1])
+    n=int(data['nearestIndex'][i][1])   #find grid the point belong to.
     if abs(data['obsdepth'][i][-1]- data['moddepth'][i])<10:
                 dataNum[m][n] += 1 
                 
@@ -98,37 +101,37 @@ lat_i = np.linspace(latsize[0],latsize[1],1000)  #use for mean error,absolute me
 
 lon_is = np.linspace(lonsize[0],lonsize[1],100)
 lat_is = np.linspace(latsize[0],latsize[1],100)  #use for depth line
-mean_i = griddata(np.array(modLon),np.array(modLat),np.array(Mean),lon_i,lat_i)
-abs_mean_i=griddata(np.array(modLon),np.array(modLat),np.array(Absmean),lon_i,lat_i)
-RMS_i=griddata(np.array(modLon),np.array(modLat),np.array(Rms),lon_i,lat_i)
-depth_i=griddata(np.array(obsLon),np.array(obsLat),np.array(depthBottom),lon_is,lat_is)
+mean_i = griddata(np.array(modLon),np.array(modLat),np.array(Mean),lon_i,lat_i,interp='linear')
+abs_mean_i=griddata(np.array(modLon),np.array(modLat),np.array(Absmean),lon_i,lat_i,interp='linear')
+RMS_i=griddata(np.array(modLon),np.array(modLat),np.array(Rms),lon_i,lat_i,interp='linear')
+depth_i=griddata(np.array(obsLon),np.array(obsLat),np.array(depthBottom),lon_is,lat_is,interp='linear')
 temp_i=[mean_i,abs_mean_i,RMS_i]
 title=['mean_error','abs_mean_error','rms']   # use for loop
 for k in range(len(title)):
-    if k==0:    
+    if k==0:    #plot mean error
         fig = plt.figure()
         ax = fig.add_subplot(111)
         draw_basemap(fig, ax, lonsize, latsize)
-        CS = plt.contourf(lon_i, lat_i, temp_i[k], np.arange(-9,10,1), cmap=plt.cm.rainbow,
-                  vmax=abs(temp_i[k]).max(), vmin=-abs(temp_i[k]).max())
-        CS1=plt.contour(lon_is, lat_is,depth_i,1,colors = 'r',linestyles=':')
+        CS = plt.contourf(lon_i, lat_i, temp_i[k], np.arange(temp_i[k].min(),temp_i[k].max()+0.1,0.1), cmap=plt.cm.rainbow,
+                  vmax=temp_i[k].max(), vmin=temp_i[k].min())
+        CS1=plt.contour(lon_is, lat_is,depth_i,1,colors = 'r',linestyles=':')  #plot 100m depth
         ax.annotate('100m depth',xy=(-75.289,35.0395),xytext=(-75.0034,34.9842),arrowprops=dict(facecolor='black'))
-        cbar=plt.colorbar(CS)
+        cbar=plt.colorbar(CS,ticks=[-6,-4,-2,0,2,4,6])
         cbar.ax.tick_params(labelsize=20) 
         #plt.scatter(np.array(obsLon),np.array(obsLat), marker='o', c='b', s=1, zorder=1)
-        plt.title('only bottom:'+title[k],fontsize=30)
+        plt.title('Only bottom:'+title[k],fontsize=30)
         plt.savefig('bottom_contourof'+title[k]+'.png')
-    if k>0:    
+    if k>0:    #plot absolute mean error and RMS
         fig = plt.figure()
         ax = fig.add_subplot(111)
         draw_basemap(fig, ax, lonsize, latsize)
-        CS = plt.contourf(lon_i, lat_i, temp_i[k], np.arange(0,9.2,0.5), cmap=plt.cm.rainbow,
-                  vmax=abs(temp_i[k]).max(), vmin=-abs(temp_i[k]).max())
-        CS1=plt.contour(lon_is, lat_is,depth_i,1,colors = 'r',linestyles=':')
+        CS = plt.contourf(lon_i, lat_i, temp_i[k], np.arange(temp_i[k].min(),temp_i[k].max()+0.1,0.1), cmap=plt.cm.rainbow,
+                  vmax=temp_i[k].max(), vmin=temp_i[k].min())
+        CS1=plt.contour(lon_is, lat_is,depth_i,1,colors = 'r',linestyles=':')  #plot 100m depth
         ax.annotate('100m depth',xy=(-75.289,35.0395),xytext=(-75.0034,34.9842),arrowprops=dict(facecolor='black'))
-        cbar=plt.colorbar(CS)
+        cbar=plt.colorbar(CS,ticks=[1,2,3,4,5,6,7,8])
         cbar.ax.tick_params(labelsize=20) 
         #plt.scatter(np.array(obsLon),np.array(obsLat), marker='o', c='b', s=1, zorder=1)
-        plt.title('only bottom:'+title[k],fontsize=30)
+        plt.title('Only bottom:'+title[k],fontsize=30)
         plt.savefig('bottom_contourof'+title[k]+'.png')   
 plt.show()
