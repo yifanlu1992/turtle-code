@@ -4,22 +4,28 @@ Created on Fri Dec  5 10:32:22 2014
 
 @author: zhaobin
 """
-'plot total time and distance of turtle during in the ocean'
+'plot total time and distance of turtles during in the ocean'
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from turtleModule import dist,np_datetime
 ###################################main code###################################
-obsData=pd.read_csv('ctdwithoutbad.csv', index_col=0)
+'''
+obsData=pd.read_csv('ctdwithoutbad_roms.csv', index_col=0)
 obsturtle_id=pd.Series(obsData['PTT'],index=obsData.index)
 obsturtle_ids=obsturtle_id.unique()
 length=len(obsturtle_ids)                #length is number of turtles 
-
+'''
+obsData = pd.read_csv('ctdWithModTempByDepth.csv')
+tf_index = np.where(obsData['TF'].notnull())[0]
+obsturtle_id=pd.Series(obsData['REF'][tf_index],index=tf_index)
+obsturtle_ids=obsturtle_id.unique()
+length=len(obsturtle_ids)                #length is number of turtles 
 ids=[]
 for i in range(length):
     ids.append([])   
 for i in range(length):
-    for j in obsData.index:
+    for j in tf_index:
         if obsturtle_id[j]==obsturtle_ids[i]:
             ids[i].append(j)             #collect each turtle`s index
 time_aves=[]                             
@@ -60,22 +66,22 @@ y2=y2.sort_index()
 x1=time_aves.unique()
 x2=dist_aves.unique()   #calculate quantity of each average number and use for plotting
 
-fig=plt.figure()
+fig=plt.figure(figsize=[16,16])
 plt.bar(x1,y1)
-plt.xlabel('time(days)',fontsize=20)
-plt.ylabel('turtle numbers',fontsize=20)
-plt.title('days reporting',fontsize=20)
+plt.xlabel('Time(days)',fontsize=20)
+plt.ylabel('Turtle numbers',fontsize=20)
+plt.title('Days reporting',fontsize=20)
 plt.xlim([0,200])
-plt.xticks(range(0,200,10),fontsize=20)
+plt.xticks(range(0,200,20),fontsize=20)
 plt.yticks(fontsize=20)
 plt.savefig('during_dive_time.png')
 
-fig=plt.figure()
+fig=plt.figure(figsize=[16,16])
 plt.bar(x2,y2)
-plt.xlabel('linear distance traveled(km)',fontsize=20)
-plt.ylabel('turtle numbers',fontsize=20)
-plt.title('distance reporting',fontsize=30)
+plt.xlabel('Linear distance traveled(km)',fontsize=20)
+plt.ylabel('Turtle numbers',fontsize=20)
+plt.title('Distance reporting',fontsize=30)
 plt.xticks(fontsize=20)
-plt.yticks(fontsize=20)
+plt.yticks([0,1,2],fontsize=20)
 plt.savefig('during_dive_dist.png')
 plt.show()
