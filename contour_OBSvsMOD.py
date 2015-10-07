@@ -14,7 +14,7 @@ from turtleModule import str2ndlist,draw_basemap,whichArea
 lonsize = [-79.5, -72.5]
 latsize = [34.5, 41]                # range of basemap
 
-obsData = pd.read_csv('ctdWithdepthofbottom.csv')
+obsData = pd.read_csv('ctdWithdepthofbottom_roms.csv')
 modTemp = pd.Series(str2ndlist(obsData['modTempByDepth'],bracket=True), index=obsData.index) # if str has '[' and ']', bracket should be True
 obsTemp = pd.Series(str2ndlist(obsData['TEMP_VALS']), index=obsData.index)
 obsDepth = pd.Series(str2ndlist(obsData['TEMP_DBAR']), index=obsData.index)
@@ -39,17 +39,17 @@ lon_i = np.linspace(lonsize[0],lonsize[1],1000)
 lat_i = np.linspace(latsize[0],latsize[1],1000)     #use for mean error,absolute mean error and rms
 lon_is = np.linspace(lonsize[0],lonsize[1],100)
 lat_is = np.linspace(latsize[0],latsize[1],100)     #use for depth line
-modtemp_i = griddata(np.array(obsLon),np.array(obsLat),np.array(modtemp),lon_i,lat_i)
-obstemp_i = griddata(np.array(obsLon),np.array(obsLat),np.array(obstemp),lon_i,lat_i)
-depth_i = griddata(np.array(obsLons),np.array(obsLats),np.array(depthBottom),lon_is,lat_is)
+modtemp_i = griddata(np.array(obsLon),np.array(obsLat),np.array(modtemp),lon_i,lat_i,interp='linear')
+obstemp_i = griddata(np.array(obsLon),np.array(obsLat),np.array(obstemp),lon_i,lat_i,interp='linear')
+depth_i = griddata(np.array(obsLons),np.array(obsLats),np.array(depthBottom),lon_is,lat_is,interp='linear')
 temp_i=[modtemp_i,obstemp_i]
-title=['modtemp','obstemp']
+title=['Modtemp','Obstemp']
 for k in range(len(temp_i)):
     fig = plt.figure()
     ax = fig.add_subplot(111)
     draw_basemap(fig, ax, lonsize, latsize)
     CS = plt.contourf(lon_i, lat_i, temp_i[k], np.arange(0,30,1), cmap=plt.cm.rainbow,
-                  vmax=abs(temp_i[k]).max(), vmin=-abs(temp_i[k]).max())
+                  vmax=temp_i[k].max(), vmin=temp_i[k].min())
     CS1=plt.contour(lon_is, lat_is,depth_i,1,colors = 'r',linestyles=':')
     cbar=plt.colorbar(CS)
     cbar.ax.tick_params(labelsize=20)
