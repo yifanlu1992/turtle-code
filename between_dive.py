@@ -1,24 +1,22 @@
 # -*- coding: utf-8 -*-
 """
 Created on Thu Nov 13 12:40:52 2014
-
+plot one turtle`s time and distance of sending message.
 @author: zhaobin
 """
-'''
-plot one turtle`s time and distance of sending message.
-'''
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from turtleModule import dist,np_datetime
 #############################main code##################################################
-obsData=pd.read_csv('ctdwithoutbad.csv', index_col=0) #ctdwithoutbad.csv just have good data
-obsturtle_id=pd.Series(obsData['PTT'],index=obsData.index)
+obsData = pd.read_csv('ctdWithModTempByDepth.csv')
+tf_index = np.where(obsData['TF'].notnull())[0]
+obsturtle_id=pd.Series(obsData['PTT'][tf_index],index=tf_index)
 obsturtle_ids=obsturtle_id.unique()
 
 turtle_id=obsturtle_ids[0]        #which turtle you want to plot.such as 0~106
 indx=[]                           #collect index of the turtle which you want to plot
-for i in obsData.index:
+for i in tf_index:
     if obsturtle_id[i] == turtle_id:
         indx.append(i)
 
@@ -44,18 +42,18 @@ fig=plt.figure()
 plt.bar(range(len(diff_dist)),diff_dist) 
 plt.ylim([0,220])
 plt.xlim([0,164])
-plt.xlabel('sort by time')
-plt.ylabel('distance unit:km')
-plt.title('dist,average='+str(dist_ave)+'(km). turtle:'+str(turtle_id))
+plt.xlabel('Sort by time')
+plt.ylabel('Distance unit:km')
+plt.title('Dist,average='+str(dist_ave)+'(km). turtle:'+str(turtle_id))
 plt.savefig('between_dive_dist.png')
  
 fig=plt.figure()
 plt.bar(range(len(diff_time)),diff_time) 
 plt.ylim([0,150])
 plt.xlim([0,164])
-plt.xlabel('sort by time')
-plt.ylabel('time unit:h')
-plt.title('time,average='+str(time_ave)+'(h). turtle:'+str(turtle_id))
+plt.xlabel('Sort by time')
+plt.ylabel('Time unit:h')
+plt.title('Time,average='+str(time_ave)+'(h). turtle:'+str(turtle_id))
 plt.savefig('between_dive_time.png')
        
 plt.show()
