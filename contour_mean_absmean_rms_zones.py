@@ -15,15 +15,18 @@ import math
 from turtleModule import str2ndlist,draw_basemap,whichArea
 import watertempModule as wtm  
 ###############################################################################
+'''
 starttime = datetime(2013,07,10) # starttime and endtime can be any time that included by model, we just want a url to get "lon_rho", "lat_rho" in model.
 endtime = starttime + timedelta(hours=1)
 tempObj = wtm.water_roms()
 url = tempObj.get_url(starttime, endtime)
+'''
+url='http://tds.marine.rutgers.edu:8080/thredds/dodsC/roms/espresso/2009_da/his'
 modData = netCDF4.Dataset(url)
 modLons = modData.variables['lon_rho'][:]
 modLats = modData.variables['lat_rho'][:]
 
-obsData = pd.read_csv('ctdWithdepthofbottom.csv')
+obsData = pd.read_csv('ctdWithdepthofbottom_roms.csv')
 modTemp = pd.Series(str2ndlist(obsData['modTempByDepth'],bracket=True), index=obsData.index) # if str has '[' and ']', bracket should be True
 obsTemp = pd.Series(str2ndlist(obsData['TEMP_VALS']), index=obsData.index)
 obsDepth = pd.Series(str2ndlist(obsData['TEMP_DBAR']), index=obsData.index)
@@ -42,7 +45,7 @@ lon_m=[]
 lat_n=[]
 dataNum,sumdata,abs_sumdata,rms = [[],[],[],[]],[[],[],[],[]],[[],[],[],[]],[[],[],[],[]]
 mean,abs_mean,rms=[[],[],[],[]],[[],[],[],[]],[[],[],[],[]]
-Mean,Absmean,Rms=[[],[],[],[]],[[],[],[],[]],[[],[],[],[]]
+Mean,Absmean,Rms=[[],[],[],[]],[[],[],[],[]],[[],[],[],[]]  #four depth zones:0~25m,25~50m,50~75m,>75m
 for k in range(4):
     for i in range(82):  # just create a list with all zero to calculate error number 
         j=[0]*130
@@ -93,7 +96,7 @@ for k in range(4):
         for j in range(130):
             Mean[k].append(mean[k][i][j])
             Absmean[k].append(abs_mean[k][i][j])
-            Rms[k].append(rms[k][i][j])
+            Rms[k].append(rms[k][i][j])  #change 82*130 list to 1*n list,use for griddata
 modLon=[]
 modLat=[]
 for i in range(len(modLons)):
@@ -107,14 +110,14 @@ lon_i = np.linspace(lonsize[0],lonsize[1],1000)
 lat_i = np.linspace(latsize[0],latsize[1],1000)  #use for mean error,absolute mean error and rms
 lon_is = np.linspace(lonsize[0],lonsize[1],100)
 lat_is = np.linspace(latsize[0],latsize[1],100)   #use for depth line
-depth_i=griddata(np.array(obsLon),np.array(obsLat),np.array(depthBottom),lon_is,lat_is)
-title=['mean_error','abs_mean_error','rms']
+depth_i=griddata(np.array(obsLon),np.array(obsLat),np.array(depthBottom),lon_is,lat_is,interp='linear')
+title=['Mean_error','Abs_mean_error','Rms']
 depth_zones=['0~25','25~50','50~75','75~100']
 mean_i,abs_mean_i,RMS_i=[[],[],[],[]],[[],[],[],[]],[[],[],[],[]]  #use for loop
 for i in range(4):
-    mean_i[i] = griddata(np.array(modLon),np.array(modLat),np.array(Mean[i]),lon_i,lat_i)
-    abs_mean_i[i]=griddata(np.array(modLon),np.array(modLat),np.array(Absmean[i]),lon_i,lat_i)
-    RMS_i[i]=griddata(np.array(modLon),np.array(modLat),np.array(Rms[i]),lon_i,lat_i)
+    mean_i[i] = griddata(np.array(modLon),np.array(modLat),np.array(Mean[i]),lon_i,lat_i,interp='linear')
+    abs_mean_i[i]=griddata(np.array(modLon),np.array(modLat),np.array(Absmean[i]),lon_i,lat_i,interp='linear')
+    RMS_i[i]=griddata(np.array(modLon),np.array(modLat),np.array(Rms[i]),lon_i,lat_i,interp='linear')
     temp_i=[mean_i[i],abs_mean_i[i],RMS_i[i]]
     
     for k in range(len(title)):
@@ -122,12 +125,12 @@ for i in range(4):
             fig = plt.figure()
             ax = fig.add_subplot(111)
             draw_basemap(fig, ax, lonsize, latsize)
-            CS = plt.contourf(lon_i, lat_i, temp_i[k], np.arange(-9,10,1), cmap=plt.cm.rainbow,
-                  vmax=abs(temp_i[k]).max(), vmin=-abs(temp_i[k]).max())
-            CS1=plt.contour(lon_is, lat_is,depth_i,1,colors = 'r',linestyles=':')
-            ax.annotate('100m depth',xy=(-75.289,35.0395),xytext=(-75.0034,34.9842),arrowprops=dict(facecolor='black'))
-            cbar=plt.colorbar(CS)
-            cbar.ax.tick_params(labelsize=20)
+            CS = plt.contourf(lon_i, lat_i, temp_i[k], np.arange(temp_i[k].min(),temp_i[k].max(),0.1), cmap=plt.cm.rainbow,
+                  vmax=temp_i[k].max(), vmin=temp_i[k].min())
+            CS1=plt.contour(lon_is, lat_is,depth_i,1,colors = 'r',linestyles=':',linewidths=5) #plot 100m depth
+            ax.annotate('100m depth',xy=(-75.289,35.0395),xytext=(-75.0034,34.9842),arrowprops=dict(facecolor='black'),fontsize=20)
+            cbar=plt.colorbar(CS,ticks=np.arange(int(temp_i[k].min())-1,int(temp_i[k].max())+1))
+            cbar.ax.tick_params(labelsize=30)
             #plt.scatter(np.array(obsLon),np.array(obsLat), marker='o', c='b', s=1, zorder=1)
             plt.title(title[k]+'  DEPTH:'+depth_zones[i],fontsize=30)
             plt.savefig('contourof'+title[k]+'_'+depth_zones[i]+'.png')
@@ -135,12 +138,12 @@ for i in range(4):
             fig = plt.figure()
             ax = fig.add_subplot(111)
             draw_basemap(fig, ax, lonsize, latsize)
-            CS = plt.contourf(lon_i, lat_i, temp_i[k], np.arange(0,9.2,0.5), cmap=plt.cm.rainbow,
-                  vmax=abs(temp_i[k]).max(), vmin=-abs(temp_i[k]).max())
-            CS1=plt.contour(lon_is, lat_is,depth_i,1,colors = 'r',linestyles=':')
-            ax.annotate('100m depth',xy=(-75.289,35.0395),xytext=(-75.0034,34.9842),arrowprops=dict(facecolor='black'))
-            cbar=plt.colorbar(CS)
-            cbar.ax.tick_params(labelsize=20)
+            CS = plt.contourf(lon_i, lat_i, temp_i[k], np.arange(temp_i[k].min(),temp_i[k].max(),0.1), cmap=plt.cm.rainbow,
+                  vmax=temp_i[k].max(), vmin=temp_i[k].min())
+            CS1=plt.contour(lon_is, lat_is,depth_i,1,colors = 'r',linestyles=':',linewidths=5) #plot 100m depth
+            ax.annotate('100m depth',xy=(-75.289,35.0395),xytext=(-75.0034,34.9842),arrowprops=dict(facecolor='black'),fontsize=20)
+            cbar=plt.colorbar(CS,ticks=np.arange(int(temp_i[k].min())-1,int(temp_i[k].max())+1))
+            cbar.ax.tick_params(labelsize=30)
             #plt.scatter(np.array(obsLon),np.array(obsLat), marker='o', c='b', s=1, zorder=1)
             plt.title(title[k]+'  DEPTH:'+depth_zones[i],fontsize=30)
             plt.savefig('contourof'+title[k]+'_'+depth_zones[i]+'.png')
