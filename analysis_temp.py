@@ -10,7 +10,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from turtleModule import str2ndlist
 ###############################################################
-obsData=pd.read_csv('ctdwithoutbad.csv', index_col=0)   
+obsData=pd.read_csv('ctdwithoutbad_roms.csv', index_col=0)   
 obsturtle_id=pd.Series(obsData['PTT'],index=obsData.index)
 obsturtle_ids=obsturtle_id.unique()
 length=len(obsturtle_ids)                #length is number of turtles 
@@ -56,7 +56,7 @@ modmins.sort()
 modmaxs.sort()
 modmeans.sort()
 data=np.round([obsmins,obsmaxs,obsmeans,modmins,modmaxs,modmeans],0)
-data_str=['observe_min','observe_max','observe_mean','model_min','model_max','model_mean']  #use for loop
+data_str=['Observe_min','Observe_max','Observe_mean','Model_min','Model_max','Model_mean']  #use for loop
 
 for i in range(len(data)):
     fig=plt.figure()
@@ -66,9 +66,9 @@ for i in range(len(data)):
     plt.bar(y.unique(),y1)
     if i==3:
         plt.xlim([0,25])   #one data in modmins is smaller than 0
-    plt.xlabel('temperature ',fontsize=20)
-    plt.ylabel('quantity',fontsize=20)
+    plt.xlabel('Temperature ',fontsize=20)
+    plt.ylabel('Quantity',fontsize=20)
     plt.ylim([0,max(y1)+2])
     plt.title(data_str[i],fontsize=20)
     plt.savefig('bar'+data_str[i]+'.png')
-plt.show()#
+plt.show()
