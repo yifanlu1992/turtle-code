@@ -7,6 +7,7 @@ Created on Tue Jan 13 13:47:35 2015
 '''
 Extract new data file named "06-08_depth.csv "with new column "modTempByDepth"
 '''
+import netCDF4
 import numpy as np
 import pandas as pd
 from datetime import datetime, timedelta
@@ -17,7 +18,6 @@ def getModTemp(modTempAll, obsTime, modLayer, modNearestIndex, s_rho, waterDepth
     '''
     Return model temp based on observation layers or depth
     '''
-    print "This program has assign the temp of island and land to 10000"
     indx = closest_num((starttime -datetime(2006,1,1)).total_seconds(), oceantime)
     modTemp = []
     l = len(modLayer.index)
@@ -33,7 +33,6 @@ def getModTemp(modTempAll, obsTime, modLayer, modNearestIndex, s_rho, waterDepth
         modTemp.append(t)
         '''
         # For depth
-        print i, l, 'getModTemp'
         timeIndex1 = closest_num((obsTime[i]-datetime(2006,01,01)).total_seconds(), oceantime)
         timeIndex = timeIndex1 - indx
         temp = modTempAll[timeIndex]
@@ -59,7 +58,7 @@ def getModTemp(modTempAll, obsTime, modLayer, modNearestIndex, s_rho, waterDepth
     modTemp = np.array(modTemp)
     return modTemp
 #####################################################################################
-obsData = pd.read_csv('06-08_indexANDlayer.csv')
+obsData = pd.read_csv('ship06-08_indexANDlayer.csv')
 obsLon = pd.Series(str2ndlist(obsData['lon'],bracket=True))
 obsLat = pd.Series(str2ndlist(obsData['lat'],bracket=True))
 obsTime = pd.Series(obsData['time'])
@@ -69,12 +68,8 @@ modLayer = pd.Series(str2ndlist(obsData['modDepthLayer'],bracket=True))
 modNearestIndex = pd.Series(str2ndlist(obsData['modNearestIndex'], bracket=True))
 for i in obsTime.index:
     obsTime[i]=datetime.strptime(obsTime[i], "%Y-%m-%d %H:%M:%S")  # change str to datatime
-starttime = datetime(2009, 8, 24)
-endtime = datetime(2013, 12, 13)
-tempObj = wtm.waterCTD()
-url = tempObj.get_url(starttime, endtime)
-# modTemp1 = tempObj.watertemp(obsLon.values, obsLat.values, obsDepth.values, obsTime.values, url)
-modDataAll = tempObj.get_data(url)
+url='http://tds.marine.rutgers.edu:8080/thredds/dodsC/roms/espresso/2009_da/his'
+modDataAll = netCDF4.Dataset(url)
 oceantime = modDataAll['ocean_time']
 modTempAll = modDataAll['temp']
 s_rho = modDataAll['s_rho']
@@ -92,4 +87,4 @@ for i in range(len(shipLon)):
 shipData['LAT']=pd.Series(shipLat)
 shipData['LON']=pd.Series(shipLon)
 shipData=shipData.drop(['Unnamed: 0','0','lat','lon','Unnamed: 0.1'],axis=1)
-shipData.to_csv('06-08_MODELtemp.csv')
+shipData.to_csv('ship06-08_MODELtemp.csv')
