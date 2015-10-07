@@ -12,7 +12,7 @@ from datetime import datetime,timedelta
 import matplotlib.pyplot as plt
 from turtleModule import str2ndlist,dist,np_datetime
 ##################################################################
-obsData=pd.read_csv('ctdwithoutbad.csv',index_col=0)
+obsData=pd.read_csv('ctdwithoutbad_roms.csv',index_col=0)
 turtle_id=pd.Series(obsData['PTT'],index=obsData.index)
 obslat = pd.Series(obsData['LAT'],index=obsData.index)
 obslon = pd.Series(obsData['LON'],index=obsData.index)
@@ -92,7 +92,7 @@ for i in early_2011:
                     ax.set_ylim([50, 0])
                     ax.set_xlabel('Tempature(degC)', fontsize=30)
                     ax.set_ylabel('Depth(m)', fontsize=30)
-                    ax.set_title('temperature before and after 2011 storm',fontsize=35)
+                    ax.set_title('Temperature before and after 2011 storm',fontsize=35)
                     plt.xticks(fontsize=35)
                     plt.yticks(fontsize=35)
                     ax.plot(obstemp[i],obsDepth[i],'bo--', label=str(obstime[i]),linewidth=2)      
@@ -117,7 +117,7 @@ for i in early_2013:
             ax.set_ylim([50, 0])
             ax.set_xlabel('Tempature(degC)', fontsize=30)
             ax.set_ylabel('Depth(m)', fontsize=30)
-            ax.set_title('temperature before and after 2013 storm',fontsize=35)
+            ax.set_title('Temperature before and after 2013 storm',fontsize=35)
             plt.xticks(fontsize=35)
             plt.yticks(fontsize=35)
             ax.plot(obstemp[i],obsDepth[i],'bo--', label=str(obstime[i]),linewidth=2)      
@@ -126,7 +126,7 @@ for i in early_2013:
             leg = plt.gca().get_legend()
             ltext = leg.get_texts()
             plt.setp(ltext, fontsize='xx-large') 
-            
+
 '''
 fig=plt.figure()
 ax = fig.add_subplot(111)
