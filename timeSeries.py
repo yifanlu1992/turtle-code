@@ -17,7 +17,6 @@ def getModTemp(modTempAll, obsTime, obsLayer, obsNearestIndex, starttime, oceant
     modTemp = []
     l = len(obsLayer.index)
     for i in obsLayer.index:
-        print i, l
         timeIndex = closest_num((obsTime[i]-datetime(2013,5,18)).total_seconds()/3600, oceantime)-ind
         modTempTime = modTempAll[timeIndex]
         # modTempTime[modTempTime.mask] = 10000
@@ -42,27 +41,26 @@ obsData = pd.read_csv('ctdWithModTempByDepth.csv', index_col=0)
 tf_index = np.where(obsData['TF'].notnull())[0]
 obsData = obsData.ix[tf_index]
 id = obsData['PTT'].drop_duplicates().values
-print 'turtle id:', id
 tID = id[3]                    # 0~4, 6,7,8,9, turtle ID.
 layers = pd.Series(str2ndlist(obsData['modDepthLayer'], bracket=True), index=obsData.index) # If str has '[' and ']', bracket should be True.
 modNearestIndex = pd.Series(str2ndlist(obsData['modNearestIndex'].values, bracket=True), index=obsData.index)
 obsTemp = pd.Series(str2ndlist(obsData['TEMP_VALS'].values), index=obsData.index)
 obsTime = pd.Series(np_datetime(obsData['END_DATE'].values), index=obsData.index)
-
+modTemp = pd.Series(str2ndlist(obsData['modTempByDepth'].values,bracket=True), index=obsData.index)
 layers = layers[obsData['PTT']==tID]
 modNearestIndex = modNearestIndex[obsData['PTT']==tID]
 time = obsTime[obsData['PTT']==tID]
 temp = obsTemp[obsData['PTT']==tID]
 #modTemp=pd.Series(str2ndlist(obsData['TEMP_VALS'][temp.index],bracket=True), index=temp.index)
-
+'''
 starttime, endtime=np.amin(time), np.amax(time)+timedelta(hours=1)
 modObj = wtm.waterCTD()
-url = modObj.get_url(starttime, endtime)
-oceantime = netCDF4.Dataset(url).variables['time']
+url = modObj.get_url(starttime, endtime)    #something wrong with ROMS website
+oceantime = netCDF4.Dataset(url).variables['ocean_time']
 modTempAll = netCDF4.Dataset(url).variables['temp']
 modTemp = getModTemp(modTempAll, obsTime, layers, modNearestIndex, starttime, oceantime)
 modTemp = pd.Series(modTemp, index=temp.index)
-
+'''
 obsMaxTemp, obsMinTemp = [], []
 modMaxTemp, modMinTemp = [], []
 for i in temp.index:  #this loop calculate min & max temperature of each dive
@@ -88,12 +86,15 @@ for i in range(1, len(data['obsMinTemp'])):
     if modMin==modMax:
         data['modMinTemp'][i]=data['modMaxTemp'][i-1]
 '''
+Date=[]
+for i in data.index:
+    Date.append(data['time'][i])
 fig = plt.figure()
 ax = fig.add_subplot(111)
-ax.plot(data['time'], data['obsMaxTemp'], color='b', linewidth=2)
-ax.plot(data['time'], data['obsMinTemp'], color='b', linewidth=2, label='observed')
-ax.plot(data['time'], data['modMaxTemp'], color='r', linewidth=2)
-ax.plot(data['time'], data['modMinTemp'], color='r', linewidth=2, label='modeled')
+ax.plot(Date, data['obsMaxTemp'], color='b', linewidth=2)
+ax.plot(Date, data['obsMinTemp'], color='b', linewidth=2, label='observed')
+ax.plot(Date, data['modMaxTemp'], color='r', linewidth=2)
+ax.plot(Date, data['modMinTemp'], color='r', linewidth=2, label='modeled')
 plt.legend()
 ax.set_xlabel('Time', fontsize=20)
 ax.set_ylabel('Temperature', fontsize=20)
@@ -130,7 +131,7 @@ ax1.set_ylabel('Temperature', fontsize=20)
 ax1.set_xticks(dates)
 ax1.xaxis.set_major_formatter(dateFmt)
 ax1.set_title('Observation', fontsize=20)
-plt.xticks(fontsize=20)
+plt.xticks(fontsize=10)
 plt.yticks(fontsize=20)
 fig.suptitle('Time series of temp for turtle:{0}'.format(tID), fontsize=25)
 ax2.set_yticks(ax1.get_yticks())
