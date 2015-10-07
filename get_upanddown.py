@@ -24,7 +24,7 @@ def find_zero(a,List):
                    break                             #find nearest on surface after diving
     return [start,i+1]
 #####################################
-data=pd.read_csv('turtle_12487_tdr.csv')
+data=pd.read_csv('turtle_13137_tdr.csv')  #two option:13137,12487
 depth=pd.Series(data['Depth'])
 time=pd.Series(data['Date'])                         
 for i in range(len(data.index)-1,0,-1):
@@ -60,4 +60,4 @@ for i in range(len(Indx)):
 data=pd.DataFrame(range(len(upcast)))
 data['down']=pd.Series(downcast)
 data['up']=pd.Series(upcast)
-data.to_csv('12487up_down.csv')
+data.to_csv('13137up_down.csv')
