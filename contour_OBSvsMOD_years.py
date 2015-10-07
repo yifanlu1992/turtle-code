@@ -14,7 +14,7 @@ from turtleModule import np_datetime,str2ndlist,draw_basemap
 lonsize = [-79.5, -72.5]
 latsize = [34.5, 41]                # range of basemap
 
-obsData = pd.read_csv('ctdWithdepthofbottom.csv')
+obsData = pd.read_csv('ctdWithdepthofbottom_roms.csv')
 obsTemp = pd.Series(str2ndlist(obsData['TEMP_VALS']), index=obsData.index)
 obsDepth = pd.Series(str2ndlist(obsData['TEMP_DBAR']), index=obsData.index)
 obsTime = pd.Series(np_datetime(obsData['END_DATE']),index=obsData.index)
@@ -67,31 +67,31 @@ lon_i = np.linspace(lonsize[0],lonsize[1],1000)
 lat_i = np.linspace(latsize[0],latsize[1],1000)                #use for mean error,absolute mean error and rms
 lon_is = np.linspace(lonsize[0],lonsize[1],100)
 lat_is = np.linspace(latsize[0],latsize[1],100)                #use for depth line
-depth_i = griddata(np.array(obsLons),np.array(obsLats),np.array(depthBottom),lon_is,lat_is)   #use for plotting 100m depth line.
+depth_i = griddata(np.array(obsLons),np.array(obsLats),np.array(depthBottom),lon_is,lat_is,interp='linear')   #use for plotting 100m depth line.
 obstemp_i=[[[],[],[],[],[]],[[],[],[],[],[]]]
 
 for i in range(len(summer)):
-    obstemp_i[0][i]=griddata(np.array(data['lon'][summer[i]]),np.array(data['lat'][summer[i]]),np.array(data['obstemp'][summer[i]]),lon_i,lat_i)
-    obstemp_i[1][i]=griddata(np.array(data['lon'][fall[i]]),np.array(data['lat'][fall[i]]),np.array(data['obstemp'][fall[i]]),lon_i,lat_i)
+    obstemp_i[0][i]=griddata(np.array(data['lon'][summer[i]]),np.array(data['lat'][summer[i]]),np.array(data['obstemp'][summer[i]]),lon_i,lat_i,interp='linear')
+    obstemp_i[1][i]=griddata(np.array(data['lon'][fall[i]]),np.array(data['lat'][fall[i]]),np.array(data['obstemp'][fall[i]]),lon_i,lat_i,interp='linear')
     fig = plt.figure()
     ax = fig.add_subplot(121)
     draw_basemap(fig, ax, lonsize, latsize)
-    CS = plt.contourf(lon_i, lat_i, obstemp_i[0][i], np.arange(0,30,2), cmap=plt.cm.rainbow,
-                  vmax=abs(obstemp_i[0][i]).max(), vmin=-abs(obstemp_i[0][i]).max())
+    CS = plt.contourf(lon_i, lat_i, obstemp_i[0][i], np.arange(0,30,1), cmap=plt.cm.rainbow,
+                  vmax=30, vmin=0)
     plt.colorbar(CS)
     CS1=ax.contour(lon_is, lat_is,depth_i,1,colors = 'r',linestyles=':',linewidths=2)
     ax.annotate('100m depth',xy=(-75.289,35.0395),xytext=(-75.0034,34.9842),arrowprops=dict(facecolor='black'))
     #plt.scatter(np.array(data['lon'][summer[i]]),np.array(data['lat'][summer[i]]), marker='o', c='b', s=5, zorder=10)
-    ax.set_title('summer_'+str(i+2009),fontsize=20)
+    ax.set_title('Summer_'+str(i+2009),fontsize=20)
     
     ax = fig.add_subplot(122)
     draw_basemap(fig, ax, lonsize, latsize)
-    CS = plt.contourf(lon_i, lat_i, obstemp_i[1][i], np.arange(0,30,2), cmap=plt.cm.rainbow,
-                  vmax=abs(obstemp_i[1][i]).max(), vmin=-abs(obstemp_i[1][i]).max())
+    CS = plt.contourf(lon_i, lat_i, obstemp_i[1][i], np.arange(0,30,1), cmap=plt.cm.rainbow,
+                  vmax=30, vmin=0)
     plt.colorbar(CS)
     CS1=ax.contour(lon_is, lat_is,depth_i,1,colors = 'r',linestyles=':',linewidths=2)
     ax.annotate('100m depth',xy=(-75.289,35.0395),xytext=(-75.0034,34.9842),arrowprops=dict(facecolor='black'))
     #plt.scatter(np.array(data['lon'][fall[i]]),np.array(data['lat'][fall[i]]), marker='o', c='b', s=5, zorder=10)
-    ax.set_title('fall_'+str(i+2009),fontsize=20)
+    ax.set_title('Fall_'+str(i+2009),fontsize=20)
     plt.savefig('summer_fall'+str(i+2009))
 plt.show()
