@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 """
 Created on Mon Nov 17 09:36:54 2014
-
+Divide the whole area into drifferent girds, and plot the number of observation
+and error in each grid in different seasons.
 @author: zhaobin
 """
 from matplotlib.mlab import griddata
@@ -22,7 +23,7 @@ lonA, latA = lons[81][0], lats[81][0] # Vertex of ROMS area.
 lonB, latB = lons[81][129], lats[81][129]
 lonC, latC = lons[0][129], lats[0][129]
 lonD, latD = lons[0][0], lats[0][0]
-obsData = pd.read_csv('ctdWithdepthofbottom.csv')
+obsData = pd.read_csv('ctdWithdepthofbottom_roms.csv')
 modTemp = pd.Series(str2ndlist(obsData['modTempByDepth'],bracket=True), index=obsData.index) # if str has '[' and ']', bracket should be True
 obsTemp = pd.Series(str2ndlist(obsData['TEMP_VALS']), index=obsData.index)
 obsDepth = pd.Series(str2ndlist(obsData['TEMP_DBAR']), index=obsData.index)
@@ -35,7 +36,7 @@ obsLons, obsLats = obsData['LON'], obsData['LAT']
 
 lon_i = np.linspace(-78,-69,100)
 lat_i = np.linspace(33,42,100)
-depth_i=griddata(np.array(obsLons),np.array(obsLats),np.array(depthBottom),lon_i,lat_i)
+depth_i=griddata(np.array(obsLons),np.array(obsLats),np.array(depthBottom),lon_i,lat_i,interp='linear')
 SPRING=[]
 SUMMER=[]
 FALL=[]
@@ -106,7 +107,6 @@ for k in range(len(season)):
         a = np.arange(n1, n2, 0.631)
         b = np.arange(m1, m2, 0.47)
         for i, j, q in zip(a, b, errorNum[s]):
-            print i, j, q
             plt.text(i, j, str(q), color='r',multialignment='center')
         m1 = m1 + 0.408
         m2 = m2 + 0.408
@@ -152,7 +152,6 @@ for k in range(len(season)):
         a = np.arange(n1, n2, 0.631)
         b = np.arange(m1, m2, 0.47)
         for i, j, q in zip(a, b, dataNum[s]):
-            print i, j, q
             plt.text(i, j, str(q), color='r',multialignment='center', ha='center')
         m1 = m1 + 0.408
         m2 = m2 + 0.408
@@ -185,7 +184,6 @@ for k in range(len(season)):
         a = np.arange(n1, n2, 0.631)
         b = np.arange(m1, m2, 0.47)
         for i, j, q in zip(a, b, ratio[s]):
-            print i, j, q
             plt.text(i, j, str(round(q,2)), color='r',multialignment='center', ha='center')
         m1 = m1 + 0.408
         m2 = m2 + 0.408
