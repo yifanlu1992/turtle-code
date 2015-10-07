@@ -71,4 +71,4 @@ for i in range(len(data)):
     plt.ylim([0,max(y1)+2])
     plt.title(data_str[i],fontsize=20)
     plt.savefig('bar'+data_str[i]+'.png')
-plt.show()
+plt.show()#
