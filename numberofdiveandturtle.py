@@ -16,6 +16,7 @@ obsTime = pd.Series(np_datetime(obsData['END_DATE'][tf_index]), index=tf_index)
 turtle_ids = pd.Series(obsData['PTT'])
 Num=[]
 num=[[[],[],[],[],[],[],[],[],[],[],[],[]],[[],[],[],[],[],[],[],[],[],[],[],[]],[[],[],[],[],[],[],[],[],[],[],[],[]],[[],[],[],[],[],[],[],[],[],[],[],[]],[[],[],[],[],[],[],[],[],[],[],[],[]]]
+#num is 5*12,5 is 5 years,12 is 12 months
 for i in range(5):    # 2009~2013,5 years
     Num.append([0]*12)    #12 months
 for i in tf_index:
@@ -38,9 +39,9 @@ plt.legend(loc='best')
 plt.xlim([0,13]) 
 plt.xticks(range(13),fontsize=18)
 plt.yticks(fontsize=18)
-plt.xlabel('month',fontsize=20)
-plt.ylabel('quantity',fontsize=20)
-plt.title('number of dive,sum:12608',fontsize=20)
+plt.xlabel('Month',fontsize=20)
+plt.ylabel('Quantity',fontsize=20)
+plt.title('Dives per month',fontsize=20)
 
 fig = plt.figure()
 for i in range(5):
@@ -51,5 +52,5 @@ plt.xticks(range(13),fontsize=18)
 plt.yticks(fontsize=18)
 plt.xlabel('month',fontsize=20)
 plt.ylabel('quantity',fontsize=20)
-plt.title('number of turtle',fontsize=20)
+plt.title('Number of turtle',fontsize=20)
 plt.show()
