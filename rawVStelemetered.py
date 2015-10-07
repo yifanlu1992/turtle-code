@@ -24,7 +24,7 @@ lat=pd.Series(secondData['lat'],index=tf_index1)
 inde=pd.Series(secondData['index'],index=tf_index1)
 indx=[]
 for i in tf_index:
-    if obsturtle_id[i]==118905:
+    if obsturtle_id[i]==118905:   #this turtle is same turtle with 4-second turtle
         indx.append(i)
 obsLon, obsLat = obsData['LON'][indx], obsData['LAT'][indx]
 obsTime = pd.Series(np_datetime(obsData['END_DATE'][indx]), index=indx)
@@ -36,8 +36,7 @@ for i in indx:
     INDX=[]
     for j in tf_index1:
         if i==inde[j]:
-            INDX.append(j)
-    print i    
+            INDX.append(j)  #find indices which are in same area 
     fig=plt.figure()
     ax=fig.add_subplot(111)
     ax.plot(temp[INDX],depth[INDX],'ro-', label='raw',linewidth=1)
