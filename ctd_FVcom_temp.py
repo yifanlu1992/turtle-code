@@ -32,4 +32,3 @@ for i in tf_index:
 obsData['modtempBYdepth']=pd.Series(TEMP,index=tf_index)
 obsData.to_csv('ctd_FVcom_temp.csv')         #ctd
 #obsData.to_csv('ship_FVcom_temp.csv')       #ship
-    
