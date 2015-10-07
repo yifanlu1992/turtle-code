@@ -10,8 +10,9 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from turtleModule import dist,np_datetime
 ##################################main code####################################
-obsData=pd.read_csv('ctdwithoutbad.csv', index_col=0)
-obsturtle_id=pd.Series(obsData['REF'],index=obsData.index)
+obsData = pd.read_csv('ctdWithModTempByDepth.csv')
+tf_index = np.where(obsData['TF'].notnull())[0]
+obsturtle_id=pd.Series(obsData['REF'][tf_index],index=tf_index)
 obsturtle_ids=obsturtle_id.unique()
 length=len(obsturtle_ids)                #length is number of turtles 
 
@@ -19,7 +20,7 @@ ids=[]
 for i in range(length):
     ids.append([])   
 for i in range(length):
-    for j in obsData.index:
+    for j in tf_index:
         if obsturtle_id[j]==obsturtle_ids[i]:
             ids[i].append(j)   #collect index of each turtle 
 time_aves=[]
@@ -34,15 +35,15 @@ for i in range(len(ids)):
     d.index=range(len(d))
     diff_dist=[]
     diff_time=[]
-    for i in d.index:
-        if i+1 == len(d):
+    for j in d.index:
+        if j+1 == len(d):
             break
-        dis=dist(d['lon'][i],d['lat'][i],d['lon'][i+1],d['lat'][i+1])
+        dis=dist(d['lon'][j],d['lat'][j],d['lon'][j+1],d['lat'][j+1])
         diff_dist.append(dis)
-        t=(d['Time'][i+1]-d['Time'][i]).total_seconds()/3600
+        t=(d['Time'][j+1]-d['Time'][j]).total_seconds()/3600
         diff_time.append(t)
-    time_ave=int(np.mean(diff_time))
-    dist_ave=int(np.mean(diff_dist))    #each turtle`s average
+    time_ave=round(np.mean(diff_time))
+    dist_ave=round(np.mean(diff_dist))    #each turtle`s average
     time_aves.append(time_ave)
     dist_aves.append(dist_ave)
 ave_time=round(np.mean(np.array(time_aves)),2)
@@ -63,16 +64,16 @@ x2=dist_aves.unique()   #calculate quantity of each average number and use for p
 
 fig=plt.figure()
 plt.bar(x1,y1)
-plt.title('average times:'+str(ave_time)+' standard deviation:'+str(std_time))
-plt.xlabel('average times /h')
-plt.ylabel('turtle numbers')
+plt.title('Average times:'+str(ave_time)+' standard deviation:'+str(std_time))
+plt.xlabel('Average times /h')
+plt.ylabel('Turtle numbers')
 plt.ylim([0,10])
 plt.xlim([0,75])
 plt.savefig('average1.png')
 fig=plt.figure()
 plt.bar(x2,y2)
-plt.title('average distance:'+str(ave_dist)+' standard deviation:'+str(std_dist))
-plt.xlabel('average distance /km')
-plt.ylabel('turtle numbers')
+plt.title('Average distance:'+str(ave_dist)+' standard deviation:'+str(std_dist))
+plt.xlabel('Average distance /km')
+plt.ylabel('Turtle numbers')
 plt.savefig('average2.png')
 plt.show()
