@@ -17,18 +17,20 @@ obsData = pd.read_csv('ctdWithModTempByDepth.csv')
 tf_index = np.where(obsData['TF'].notnull())[0] # Get index of good data.
 obsDeepest = obsData['MAX_DBAR'][tf_index] # get deepest data file depth
 modNearestIndex = pd.Series(str2ndlist(obsData['modNearestIndex'][tf_index], bracket=True), index=tf_index)
-
+'''
 starttime = datetime(2013,05,20) # starttime and endtime here is just to get 'h', the model depth
 endtime = datetime(2013, 12, 13)
 tempObj = wtm.waterCTD()
 url = tempObj.get_url(starttime, endtime)
+'''
+url='http://tds.marine.rutgers.edu:8080/thredds/dodsC/roms/espresso/2009_da/his'
 modData = netCDF4.Dataset(url)
 h = modData.variables['h']
 moddeepest=[]
 for i in tf_index:
     m, n = int(modNearestIndex[i][0]), int(modNearestIndex[i][1])
     moddeepest.append(h[m][n])
-   
+    print(i)
 p = obsDeepest/moddeepest
 index1 = p[p>0.8].index
 
@@ -45,8 +47,8 @@ fig=plt.figure()
 ax=fig.add_subplot(111)
 pd.Series(INDEX).plot(kind='bar')
 ax.set_xticklabels(['0~10','10~20','20~30','30~40','40~50','50~60','60~70','70~80','>80'],rotation=0)
-plt.xlabel('depth(m)',fontsize=15)
-plt.ylabel('quantity',fontsize=15)
-plt.title('maxDepth/moddepth>0.8 in each depth zone',fontsize=25)
+plt.xlabel('Depth(m)',fontsize=15)
+plt.ylabel('Quantity',fontsize=15)
+plt.title('MaxDepth/moddepth>0.8 in each depth zone',fontsize=25)
 plt.savefig('dives_in_depth_zone.png')
 plt.show()
