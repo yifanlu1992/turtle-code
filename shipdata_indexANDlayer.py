@@ -22,10 +22,7 @@ def nearest_point_index2(lon, lat, lons, lats):
 obsData = pd.read_csv('06-08_ch.csv', index_col=0)
 obsLon = pd.Series(str2ndlist(obsData['lon'],bracket=True))
 obsLat = pd.Series(str2ndlist(obsData['lat'],bracket=True))
-starttime = datetime(2013,07,10) # starttime and endtime can be any time that included by model, we just want a url to get "lon_rho", "lat_rho", "h", "s_rho" in model.
-endtime = starttime + timedelta(hours=1)
-tempObj = wtm.water_roms()
-url = tempObj.get_url(starttime, endtime)
+url='http://tds.marine.rutgers.edu:8080/thredds/dodsC/roms/espresso/2009_da/his'
 modData = netCDF4.Dataset(url)
 modLons = modData.variables['lon_rho'][:]
 modLats = modData.variables['lat_rho'][:]
@@ -44,7 +41,6 @@ for i in indexNotNull:
     ind.append(index[0][0])
     ind.append(index[1][0])
     loc.append(ind)
-    print i
 loc = pd.Series(loc, index=indexNotNull)
 obsData['modNearestIndex'] = loc #add loc to obsData in case want to save it.
 
@@ -58,7 +54,6 @@ for i in indexNotNull:
         # depthLayers = h[nearest_index[0], nearest_index[1]] * s_rho
         l = np.argmin(abs(depthLayers+obsDepth[i][j])) # obsDepth is positive and depthLayers is negitive. So the index of min sum is the layer
         layers.append(l)
-        print i, j, l
     layersAll.append(layers)
 layersAll = pd.Series(layersAll, index=indexNotNull)
 obsData['modDepthLayer'] = layersAll
