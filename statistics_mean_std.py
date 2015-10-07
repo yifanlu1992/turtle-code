@@ -35,7 +35,6 @@ data = pd.DataFrame({'lon': obsLon, 'lat': obsLat,
 TEMP=[]
 for i in range(50):   #depth 0~50m
     TEMP.append([])
-    print(i)
     for j in data.index:
         for q in range(len(data['depth'][j])):
             if int(data['depth'][j][q])==i+2:   #no depth<2m
