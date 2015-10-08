@@ -32,26 +32,27 @@ Down_mean_temp,Up_mean_temp,Down_min_temp,Up_min_temp,Down_max_temp,Up_max_temp=
 diff_temp_up,diff_temp_down=[],[]
 Down_speed,Up_speed=[],[]
 for i in indx[1:len(indx)]:
-    a=temp[down[i][0]:down[i][-1]]
-    b=temp[up[i][0]:up[i][-1]]
-    Down_mean_temp.append(np.mean(a))
-    Up_mean_temp.append(np.mean(b))
-    Down_min_temp.append(min(a))
-    Up_min_temp.append(min(b))
-    Down_max_temp.append(max(a))
-    Up_max_temp.append(max(b))
-    aa=temp[down[i][0]]-temp[down[i][-1]]
-    bb=temp[up[i][-1]]-temp[up[i][0]]    
-    diff_temp_down.append(aa)
-    diff_temp_up.append(bb)
+    if down[i][-1]-down[i][0]>0:
+        a=temp[int(down[i][0]):int(down[i][-1])]
+        b=temp[int(up[i][0]):int(up[i][-1])]
+        Down_mean_temp.append(np.mean(a))
+        Up_mean_temp.append(np.mean(b))
+        Down_min_temp.append(min(a))
+        Up_min_temp.append(min(b))
+        Down_max_temp.append(max(a))
+        Up_max_temp.append(max(b))
+        aa=temp[down[i][0]]-temp[down[i][-1]]
+        bb=temp[up[i][-1]]-temp[up[i][0]]    
+        diff_temp_down.append(aa)
+        diff_temp_up.append(bb)
     
-    down_speed,up_speed=[],[]
-    a=(depth[down[i][-1]]-depth[down[i][0]])/(time[down[i][-1]]-time[down[i][0]]).total_seconds()
-    b=(depth[up[i][0]]-depth[up[i][-1]])/(time[up[i][-1]]-time[up[i][0]]).total_seconds()
-    down_speed.append(a)
-    up_speed.append(b)
-    Down_speed.append(down_speed)
-    Up_speed.append(up_speed)
+        down_speed,up_speed=[],[]
+        a=(depth[down[i][-1]]-depth[down[i][0]])/(time[down[i][-1]]-time[down[i][0]]).total_seconds()
+        b=(depth[up[i][0]]-depth[up[i][-1]])/(time[up[i][-1]]-time[up[i][0]]).total_seconds()
+        down_speed.append(a)
+        up_speed.append(b)
+        Down_speed.append(down_speed)
+        Up_speed.append(up_speed)
 for i in range(len(Down_speed)):
     Down_speed[i]=round(Down_speed[i][0],3)  
     Up_speed[i]=round(Up_speed[i][0],3)
@@ -91,3 +92,5 @@ print 'mean(min temperature in upcasts)',round(np.mean(Up_min_temp),3)
 print 'mean(max temperature in upcasts)',round(np.mean(Up_max_temp),3)
 print "'slow' speed in upcasts is",round(float(len(slow_up_speed))/len(Up_speed)*100,2),'%'
 print "'slow' speed in downcasts is",round(float(len(slow_down_speed))/len(Down_speed)*100,2),'%'
+print "mean speed of upcasts:"+str(round(np.mean(Up_speed),3))+"m/s"
+print "mean speed of downcasts:"+str(round(np.mean(Down_speed),3))+"m/s"
