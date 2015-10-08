@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 from turtleModule import str2ndlist,np_datetime,draw_basemap
 from matplotlib import animation
 #################################################################
-obsData = pd.read_csv('ctdWithdepthofbottom.csv')
+obsData = pd.read_csv('ctdWithdepthofbottom_roms.csv')
 obsTime = pd.Series(np_datetime(obsData['END_DATE']),index=obsData.index)
 obsLon, obsLat = obsData['LON'], obsData['LAT']  
 shipData = pd.read_csv('06-08-Depth_ch.csv')
@@ -35,7 +35,7 @@ for i in range(len(shipyears)):
     for j in shipData.index:
         if shipTime[j].year==2009+i:
             for q in range(12):
-                if shipTime[j].month==q:
+                if shipTime[j].month==q+1:
                     shipyears[i][q].append(j)
 obsYear=[]
 for i in range(5):                     #5 is the number of obsYear
@@ -61,9 +61,3 @@ def animate(i):
 anim = animation.FuncAnimation(fig, animate, frames=60, interval=1000)    
 anim.save('turtle.mp4', fps=2)
 plt.show()
-
-         
-        
-        
-        
-        
