@@ -13,17 +13,21 @@ import matplotlib.pyplot as plt
 from turtleModule import draw_basemap,dist
 from matplotlib.mlab import griddata
 from datetime import datetime,timedelta
-def getHYcom(latpt,lonpt,time,depth):
+def getHYcom(latpt,lonpt,time_roms,depth):
+    '''old version
     lonpt=360+lonpt+74.160034         #this is HYCOM`S LON range
     if time.month==1 and time.day==1:
         url='http://tds.hycom.org/thredds/dodsC/datasets/global/GLBa0.08_rect/data/temp/rarchv.'+str(time.year)+'_001_00_3zt.nc' 
     else:
         url='http://tds.hycom.org/thredds/dodsC/datasets/global/GLBa0.08_rect/data/temp/rarchv.'+str(time.year)+'_'+format(int(str(time-datetime(time.year,1,1,)).split(' ')[0])+1,'03')+'_00_3zt.nc'
         #use different days setting url
+    '''   
+    url='http://tds.hycom.org/thredds/dodsC/GLBu0.08/expt_19.1/3hrly'
     nc = netCDF4.Dataset(url)
-    lat = nc.variables['Latitude'][1900:2169] 
-    lon = nc.variables['Longitude'][3400:3700]  # ROMS range 
-    Depth = nc.variables['Depth'][:]
+    lat = nc.variables['lat'][1400:1550] 
+    lon = nc.variables['lon'][1250:1450]  # ROMS range 
+    Depth = nc.variables['depth'][:]
+    t=nc.variables['time'][:]
     layer=[]
     for i in depth[0:len(depth)+1]:
         layer.append(np.argmin(abs(i-Depth)))     #get layer of depth
@@ -35,13 +39,12 @@ def getHYcom(latpt,lonpt,time,depth):
             indlat.append(k)
             indlon.append(j)
     id = np.array(dist_sq).argmin() # 1D index of minimum dist_sq element
+    t_diff=(time_roms-datetime(2000,1,1)).total_seconds()/3600     #2000,01,01 is HYCOM`s start time.Unit is hour.
+    TIME=np.argmin(abs(t_diff-np.array(t)))
     var=[]
     for i in layer:
-        t = nc.variables['temperature'][0,i,1900+indlat[id],3400+indlon[id]] #creates a "netCDF4 object"
-        if t<100:
-            var.append(t)
-        elif t.fill_value:
-            var.append(-100)
+        t = nc.variables['water_temp'][TIME,i,1400+indlat[id],1250+indlon[id]] #creates a "netCDF4 object"
+        var.append(t)
     nc.close()
     return var
     
@@ -95,32 +98,27 @@ for i in np.arange(52,34,-1):
     for j in range(36):                              #this is roms`s layers
         temp_roms.append(temps_roms[40000][j][i][50])
     Temp_roms.append(temp_roms)
-    print i
-
-
 ttt_roms=np.array(Temp_roms).transpose()
 
 hh_roms=[]
 for i in H_roms:
     hh_roms.append(-i*s_rho)
-    print 'i',i
 hh=np.array(hh_roms).transpose()
 distance=list(np.array([dist(LON_roms[0],LAT_roms[0],LON_roms[-1],LAT_roms[-1])])/len(LAT_roms)*range(1,len(LAT_roms)+1))   #this is distance between location
 distances=[]
 for i in range(36):
     distances.append(distance)
+
 temp_hycom=[]
 for i in range(len(LON_roms)):
     t=getHYcom(LAT_roms[i],LON_roms[i],TIME_roms,hh_roms[i])
     temp_hycom.append(t)
-    print i
 ttt_hycom=np.array(temp_hycom).transpose()
 
 temp_fvcom=[]
 for i in range(len(LON_roms)):
     t=getFVcom(LAT_roms[i],LON_roms[i],TIME_roms,hh_roms[i])
     temp_fvcom.append(t)
-    print 'i',i
 ttt_fvcom=np.array(temp_fvcom).transpose()
 
 TEMP_roms,TEMP_fvcom,TEMP_hycom,DEPTH,DIST=[],[],[],[],[]
@@ -136,9 +134,9 @@ lonsize = [np.amin(lons_roms), np.amax(lons_roms)]
 latsize = [np.amin(lats_roms), np.amax(lats_roms)]
 dis_i = np.linspace(distance[0],distance[-1],1000)
 dep_i = np.linspace(H_roms[-1],0,1000) 
-modtemp_i_roms = griddata(np.array(DIST),np.array(DEPTH),np.array(TEMP_roms),dis_i,dep_i)
-modtemp_i_fvcom = griddata(np.array(DIST),np.array(DEPTH),np.array(TEMP_fvcom),dis_i,dep_i)
-modtemp_i_hycom = griddata(np.array(DIST),np.array(DEPTH),np.array(TEMP_hycom),dis_i,dep_i)
+modtemp_i_roms = griddata(np.array(DIST),np.array(DEPTH),np.array(TEMP_roms),dis_i,dep_i,interp='linear')
+modtemp_i_fvcom = griddata(np.array(DIST),np.array(DEPTH),np.array(TEMP_fvcom),dis_i,dep_i,interp='linear')
+modtemp_i_hycom = griddata(np.array(DIST),np.array(DEPTH),np.array(TEMP_hycom),dis_i,dep_i,interp='linear')
 Temp_hycom=[]
 for i in TEMP_hycom:
     if i>0:
@@ -161,7 +159,7 @@ fig = plt.figure()
 for i in range(len(modtemp_i)):
    ax = fig.add_subplot(1,3,i+1)
    CS = ax.contourf(dis_i, dep_i, modtemp_i[i], np.arange(int(min(temp_min)),int(max(temp_max))+2,temp_interval), cmap=plt.cm.rainbow,
-                  vmax=abs(modtemp_i[i]).max(), vmin=-abs(modtemp_i[i]).max())     #+2 wants to make range of colorbar bigger than  range of temperature
+                  vmax=modtemp_i[i].max(), vmin=modtemp_i[i].min())     #+2 wants to make range of colorbar bigger than  range of temperature
    
    ax.plot(distance,H_roms)
    plt.ylim([200,0])
