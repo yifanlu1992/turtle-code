@@ -14,7 +14,7 @@ from datetime import datetime, timedelta
 from turtleModule import str2ndlist, np_datetime
 ###################################main code###################################
 criteria=3                   # criteria for rms
-obsData=pd.read_csv('ctdWithdepthofbottom.csv')
+obsData=pd.read_csv('ctdWithdepthofbottom_roms.csv')
 obsDepth=pd.Series(str2ndlist(obsData['TEMP_DBAR']),index=obsData.index)
 modDepth=pd.Series(obsData['depth_bottom'],index=obsData.index)
 indx=[]
@@ -48,13 +48,14 @@ for j in range(len(ids)):
         time.append(obsTime[k])
     data=pd.DataFrame({'time':time,'obsMaxTemp':obsMaxTemp,'obsMinTemp':obsMinTemp,
                        'modMaxTemp':modMaxTemp,'modMinTemp':modMinTemp},index=range(len(time)))
-    data = data.sort_index(by='time')                       #calculate each turtle`s min,max temperature of observe and modle.
-    fig = plt.figure()
+    data = data.sort_index(by='time')                       #calculate each turtle`s min,max temperature of observe and modle. 
+    time.sort()    
+    fig = plt.figure(figsize=(12,12))
     ax = fig.add_subplot(111)
-    ax.plot(data['time'], data['obsMaxTemp'], color='b', linewidth=2)
-    ax.plot(data['time'], data['obsMinTemp'], color='b', linewidth=2, label='obs')
-    ax.plot(data['time'], data['modMaxTemp'], color='r', linewidth=2)
-    ax.plot(data['time'], data['modMinTemp'], color='r', linewidth=2, label='mod')
+    ax.plot(time, data['obsMaxTemp'], color='b', linewidth=2)
+    ax.plot(time, data['obsMinTemp'], color='b', linewidth=2, label='obs')
+    ax.plot(time, data['modMaxTemp'], color='r', linewidth=2)
+    ax.plot(time, data['modMinTemp'], color='r', linewidth=2, label='mod')
     plt.legend()
     ax.set_xlabel('time', fontsize=20)
     ax.set_ylabel('temperature', fontsize=20)
@@ -66,10 +67,9 @@ for j in range(len(ids)):
     plt.yticks(fontsize=20)
     plt.title('time series of temp for turtle:{0}'.format(obsturtle_ids[j]), fontsize=25)
     plt.savefig('timeSeries_'+str(obsturtle_ids[j])+'.png')
-    
     dif=np.array((data['obsMinTemp'])-np.array(data['modMinTemp']))
     rms=sqrt(np.sum(dif*dif)/len(data))
     if abs(rms)>criteria:
         bad_ids.append(obsturtle_ids[j])            #calculate 'bad' ids
-print '"bad" ids are:',bad_ids
+print('"bad" ids are:',bad_ids)
 plt.show()
