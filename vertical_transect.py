@@ -4,6 +4,7 @@ Created on Mon Mar 23 13:38:10 2015
 
 @author: zhaobin
 """
+'plot vertical transect of ROMS,FVCOM,HYCOM`s temperature from shallow to deep'
 import pandas as pd
 import numpy as np
 from mpl_toolkits.basemap import Basemap
@@ -108,7 +109,6 @@ distance=list(np.array([dist(LON_roms[0],LAT_roms[0],LON_roms[-1],LAT_roms[-1])]
 distances=[]
 for i in range(36):
     distances.append(distance)
-
 temp_hycom=[]
 for i in range(len(LON_roms)):
     t=getHYcom(LAT_roms[i],LON_roms[i],TIME_roms,hh_roms[i])
@@ -142,7 +142,7 @@ modtemp_i_hycom = griddata(np.array(DIST),np.array(DEPTH),np.array(TEMP_hycom),d
 Temp_hycom=[]
 for i in TEMP_hycom:
     if i>0:
-        Temp_hycom.append(i)
+        Temp_hycom.append(i)        #get rid of bad data
 modtemp_i=[modtemp_i_roms,modtemp_i_fvcom,modtemp_i_hycom]
 
 TEMP=[TEMP_roms,TEMP_fvcom,Temp_hycom]
