@@ -16,62 +16,47 @@ from turtleModule import str2ndlist, np_datetime, bottom_value, dist
 #####################################roms######################################
 obsData = pd.read_csv('ctdWithModTempByDepth.csv') # extracted from ctdWithModTempByDepth.py
 tf_index = np.where(obsData['TF'].notnull())[0]    # get the index of good data
-obsLon, obsLat = obsData['LON'][tf_index], obsData['LAT'][tf_index]
 obsTime = pd.Series(np_datetime(obsData['END_DATE'][tf_index]), index=tf_index)
 obsTemp = pd.Series(str2ndlist(obsData['TEMP_VALS'][tf_index]), index=tf_index)
 obsDepth = pd.Series(str2ndlist(obsData['TEMP_DBAR'][tf_index]), index=tf_index)
 modTemp = pd.Series(np.array(str2ndlist(obsData['modTempByDepth'][tf_index], bracket=True)), index=tf_index)
-data_roms = pd.DataFrame({'lon': obsLon, 'lat': obsLat,
-                     'obstemp': obsTemp.values,'modtemp':modTemp,
-                     'depth': obsDepth, 'time': obsTime.values
-                     }, index=tf_index)
-
+data_roms = pd.DataFrame({'obstemp': obsTemp.values,'modtemp':modTemp,'depth': obsDepth}, index=tf_index)
 TEMP_roms=[]
-for i in range(50):   #depth 0~50m
+for i in np.arange(50):   #depth 0~50m
     TEMP_roms.append([])
     for j in data_roms.index:
         for q in range(len(data_roms['depth'][j])):
-            if int(data_roms['depth'][j][q])==i+2:   #no depth<2m
+            if int(data_roms['depth'][j][q])==i:   #no depth<2m
                 if data_roms['modtemp'][j][q]<100:  #some bad data>100 degC
                     TEMP_roms[i].append(data_roms['modtemp'][j][q]-data_roms['obstemp'][j][q])
 ######################################fvcom####################################
 obsData = pd.read_csv('ctdWithdepthofbottom_fvcom.csv') 
 tf_index = np.where(obsData['in FVcom range'].notnull())[0]    # get the index of good data
-obsLon, obsLat = obsData['LON'][tf_index], obsData['LAT'][tf_index]
-obsTime = pd.Series(np_datetime(obsData['END_DATE'][tf_index]), index=tf_index)
 obsTemp = pd.Series(str2ndlist(obsData['TEMP_VALS'][tf_index]), index=tf_index)
 obsDepth = pd.Series(str2ndlist(obsData['TEMP_DBAR'][tf_index]), index=tf_index)
 modTemp = pd.Series(np.array(str2ndlist(obsData['modtempBYdepth'][tf_index], bracket=True)), index=tf_index)
-data_fvcom = pd.DataFrame({'lon': obsLon, 'lat': obsLat,
-                     'obstemp': obsTemp.values,'modtemp':modTemp,
-                     'depth': obsDepth, 'time': obsTime.values
-                     }, index=tf_index)
+data_fvcom = pd.DataFrame({'obstemp': obsTemp.values,'modtemp':modTemp,'depth': obsDepth}, index=tf_index)
 TEMP_fvcom=[]
-for i in range(50):   #depth 0~50m
+for i in np.arange(50):   #depth 0~50m
     TEMP_fvcom.append([])
     for j in data_fvcom.index:
         for q in range(len(data_fvcom['depth'][j])):
-            if int(data_fvcom['depth'][j][q])==i+2:   #no depth<2m
+            if int(data_fvcom['depth'][j][q])==i:   #no depth<2m
                 if data_fvcom['modtemp'][j][q]<100:  #some bad data>100 degC
                     TEMP_fvcom[i].append(data_fvcom['modtemp'][j][q]-data_fvcom['obstemp'][j][q])
 ######################################hycom####################################
 obsData = pd.read_csv('ctd_withHYCOMtemp.csv') 
 tf_index = np.where(obsData['TF'].notnull())[0]    # get the index of good data
-obsLon, obsLat = obsData['LON'][tf_index], obsData['LAT'][tf_index]
-obsTime = pd.Series(np_datetime(obsData['END_DATE'][tf_index]), index=tf_index)
 obsTemp = pd.Series(str2ndlist(obsData['TEMP_VALS'][tf_index]), index=tf_index)
 obsDepth = pd.Series(str2ndlist(obsData['TEMP_DBAR'][tf_index]), index=tf_index)
 modTemp = pd.Series(np.array(str2ndlist(obsData['modtemp_HYCOM'][tf_index], bracket=True)), index=tf_index)
-data_hycom = pd.DataFrame({'lon': obsLon, 'lat': obsLat,
-                     'obstemp': obsTemp.values,'modtemp':modTemp,
-                     'depth': obsDepth, 'time': obsTime.values,
-                     }, index=tf_index)
+data_hycom = pd.DataFrame({'obstemp': obsTemp.values,'modtemp':modTemp,'depth': obsDepth}, index=tf_index)
 TEMP_hycom=[]
-for i in range(50):   #depth 0~50m
+for i in np.arange(50):   #depth 0~50m
     TEMP_hycom.append([])
     for j in data_hycom.index:
         for q in range(len(data_hycom['depth'][j])):
-            if int(data_hycom['depth'][j][q])==i+2:   #no depth<2m
+            if int(data_hycom['depth'][j][q])==i:   #no depth<2m
                 if -10<data_hycom['modtemp'][j][q]<100:  #some bad data>100 and <-10 degC
                     TEMP_hycom[i].append(data_hycom['modtemp'][j][q]-data_hycom['obstemp'][j][q])
 ave_roms,std_roms=[],[]
