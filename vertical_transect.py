@@ -84,7 +84,7 @@ temps_roms=data.variables['temp']
 h_roms=data.variables['h'][:]
 s_rho=data.variables['s_rho'][:]
 time=data.variables['ocean_time'][:]
-TIME_roms=datetime(2006,01,01,00,00,00)+timedelta(seconds=time[40000])  #2006 is ROMS`s start time,40000 is index of time
+TIME_roms=datetime(2006,1,1,0,0,0)+timedelta(seconds=time[40000])  #2006 is ROMS`s start time,40000 is index of time
 
 LAT_roms=[]
 LON_roms=[]
@@ -98,6 +98,7 @@ for i in np.arange(52,34,-1):
     for j in range(36):                              #this is roms`s layers
         temp_roms.append(temps_roms[40000][j][i][50])
     Temp_roms.append(temp_roms)
+
 ttt_roms=np.array(Temp_roms).transpose()
 
 hh_roms=[]
@@ -167,7 +168,7 @@ for i in range(len(modtemp_i)):
    plt.xlabel('distance(km)',fontsize=20)
    if i==0:
        plt.ylabel('depth(m)',fontsize=20)
-   plt.text(20,180,str(datetime(2006,01,01,00,00,00)+timedelta(seconds=time[40000])))   # 20,180 is location of text
+   plt.text(20,180,str(datetime(2006,1,1,0,0,0)+timedelta(seconds=time[40000])))   # 20,180 is location of text
    polygon=[]
    for j in range(len(H_roms)):
        polygon.append([distance[j],H_roms[j]])
@@ -177,4 +178,5 @@ for i in range(len(modtemp_i)):
    plt.title(''+MODEL[i]+' transect',fontsize=20)
 cbar=plt.colorbar(CS)
 cbar.ax.tick_params(labelsize=20)
+cbar.ax.set_ylabel('Temperature($^\circ$C)', fontsize=20)
 plt.show()
