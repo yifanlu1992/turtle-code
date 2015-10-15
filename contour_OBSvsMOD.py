@@ -53,6 +53,7 @@ for k in range(len(temp_i)):
     CS1=plt.contour(lon_is, lat_is,depth_i,1,colors = 'r',linestyles=':')
     cbar=plt.colorbar(CS)
     cbar.ax.tick_params(labelsize=20)
+    cbar.ax.set_ylabel('Temperature($^\circ$C)', fontsize=20)
     #plt.scatter(np.array(obsLon),np.array(obsLat), marker='o', c='b', s=5, zorder=10)
     ax.set_title(title[k],fontsize=30)
     ax.annotate('100m depth',xy=(-75.289,35.0395),xytext=(-75.0034,34.9842),arrowprops=dict(facecolor='black'))
