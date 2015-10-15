@@ -37,12 +37,7 @@ url="http://www.smast.umassd.edu:8080/thredds/dodsC/FVCOM/NECOFS/Forecasts/NECOF
 nc = netCDF4.Dataset(url)
 lat = nc.variables['lat'][:]
 lon = nc.variables['lon'][:]
-latc = nc.variables['latc'][:]
-lonc = nc.variables['lonc'][:]
 temp=nc.variables['temp']
-sali=nc.variables["salinity"]
-siglay=nc.variables['siglay']
-h = nc.variables['h'][:]
 nv = nc.variables['nv'][:].T - 1 # read connectivity array
 time = nc.variables['time'][:]
 latsize=[min(lat)-0.1,max(lat)+0.1]
@@ -75,6 +70,7 @@ if method=='gif':
         plt.title('Temperature model, Time:'+str(TIME)[5:16],fontsize=30)
         cbar=colorbar(ticks=[1,5,9,13,17,21,25,29])
         cbar.ax.tick_params(labelsize=20) 
+        cbar.ax.set_ylabel('Temperature($^\circ$C)', fontsize=20)
         if i<10:
             plt.savefig('MASSBAY_temperature_00'+str(i)+'.png')  #save pic as 00X.png
         elif i<100:
