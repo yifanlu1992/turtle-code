@@ -78,7 +78,9 @@ for i in range(len(summer)):
     draw_basemap(fig, ax, lonsize, latsize)
     CS = plt.contourf(lon_i, lat_i, obstemp_i[0][i], np.arange(0,30,1), cmap=plt.cm.rainbow,
                   vmax=30, vmin=0)
-    plt.colorbar(CS)
+    cbar=plt.colorbar(CS)
+    cbar.ax.tick_params(labelsize=20)
+    cbar.ax.set_ylabel('Temperature($^\circ$C)', fontsize=20)
     CS1=ax.contour(lon_is, lat_is,depth_i,1,colors = 'r',linestyles=':',linewidths=2)
     ax.annotate('100m depth',xy=(-75.289,35.0395),xytext=(-75.0034,34.9842),arrowprops=dict(facecolor='black'))
     #plt.scatter(np.array(data['lon'][summer[i]]),np.array(data['lat'][summer[i]]), marker='o', c='b', s=5, zorder=10)
@@ -88,7 +90,9 @@ for i in range(len(summer)):
     draw_basemap(fig, ax, lonsize, latsize)
     CS = plt.contourf(lon_i, lat_i, obstemp_i[1][i], np.arange(0,30,1), cmap=plt.cm.rainbow,
                   vmax=30, vmin=0)
-    plt.colorbar(CS)
+    cbar=plt.colorbar(CS)
+    cbar.ax.tick_params(labelsize=20)
+    cbar.ax.set_ylabel('Temperature($^\circ$C)', fontsize=20)
     CS1=ax.contour(lon_is, lat_is,depth_i,1,colors = 'r',linestyles=':',linewidths=2)
     ax.annotate('100m depth',xy=(-75.289,35.0395),xytext=(-75.0034,34.9842),arrowprops=dict(facecolor='black'))
     #plt.scatter(np.array(data['lon'][fall[i]]),np.array(data['lat'][fall[i]]), marker='o', c='b', s=5, zorder=10)
