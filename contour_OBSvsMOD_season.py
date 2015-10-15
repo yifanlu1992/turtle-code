@@ -72,7 +72,9 @@ for i in [0,2]:        #two seasons together plot.
     CS = ax.contourf(lon_i, lat_i, modtemp_i, np.arange(modtemp_i.min(),modtemp_i.max(),0.1), cmap=plt.cm.rainbow,
                   vmax=modtemp_i.max(), vmin=modtemp_i.min())
     CS1=ax.contour(lon_is, lat_is,depth_i,1,colors = 'r',linestyles=':',linewidths=2)
-    plt.colorbar(CS,ticks=np.arange(int(modtemp_i.min())-1,int(modtemp_i.max())+1,2))
+    cbar=plt.colorbar(CS,ticks=np.arange(int(modtemp_i.min())-1,int(modtemp_i.max())+1,2))
+    cbar.ax.tick_params(labelsize=20)
+    cbar.ax.set_ylabel('Temperature($^\circ$C)', fontsize=20)
     #plt.scatter(np.array(obsLon),np.array(obsLat), marker='o', c='b', s=5, zorder=10)
     ax.set_title('Model_'+season[i])
     ax.annotate('100m depth',xy=(-75.289,35.0395),xytext=(-75.0034,34.9842),arrowprops=dict(facecolor='black'))    
@@ -82,7 +84,9 @@ for i in [0,2]:        #two seasons together plot.
     CS = ax1.contourf(lon_i, lat_i, obstemp_i, np.arange(obstemp_i.min(),obstemp_i.max(),0.1), cmap=plt.cm.rainbow,
                   vmax=obstemp_i.max(), vmin=obstemp_i.min())
     CS1=ax1.contour(lon_is, lat_is,depth_i,1,colors = 'r',linestyles=':',linewidths=2)
-    plt.colorbar(CS,ticks=np.arange(int(obstemp_i.min())-1,int(obstemp_i.max())+1,2))
+    cbar=plt.colorbar(CS,ticks=np.arange(int(obstemp_i.min())-1,int(obstemp_i.max())+1,2))
+    cbar.ax.tick_params(labelsize=20)
+    cbar.ax.set_ylabel('Temperature($^\circ$C)', fontsize=20)
     #plt.scatter(np.array(obsLon),np.array(obsLat), marker='o', c='b', s=5, zorder=10)
     ax1.set_title('Observation_'+season[i])
     ax1.annotate('100m depth',xy=(-75.289,35.0395),xytext=(-75.0034,34.9842),arrowprops=dict(facecolor='black'))  
@@ -98,7 +102,9 @@ for i in [0,2]:        #two seasons together plot.
     CS = ax2.contourf(lon_i, lat_i, modtemp_i, np.arange(modtemp_i.min(),modtemp_i.max(),0.1), cmap=plt.cm.rainbow,
                   vmax=modtemp_i.max(), vmin=modtemp_i.min())
     CS1=ax2.contour(lon_is, lat_is,depth_i,1,colors = 'r',linestyles=':',linewidths=2)
-    plt.colorbar(CS,ticks=np.arange(int(modtemp_i.min())-1,int(modtemp_i.max())+1,2))
+    cbar=plt.colorbar(CS,ticks=np.arange(int(modtemp_i.min())-1,int(modtemp_i.max())+1,2))
+    cbar.ax.tick_params(labelsize=20)
+    cbar.ax.set_ylabel('Temperature($^\circ$C)', fontsize=20)
     #plt.scatter(np.array(obsLon),np.array(obsLat), marker='o', c='b', s=5, zorder=10)
     ax2.set_title('Model_'+season[i+1])
     ax2.annotate('100m depth',xy=(-75.289,35.0395),xytext=(-75.0034,34.9842),arrowprops=dict(facecolor='black'))    
@@ -108,7 +114,9 @@ for i in [0,2]:        #two seasons together plot.
     CS = ax3.contourf(lon_i, lat_i, obstemp_i, np.arange(obstemp_i.min(),obstemp_i.max(),0.1), cmap=plt.cm.rainbow,
                   vmax=obstemp_i.max(), vmin=obstemp_i.min())
     CS1=ax3.contour(lon_is, lat_is,depth_i,1,colors = 'r',linestyles=':',linewidths=2)
-    plt.colorbar(CS,ticks=np.arange(int(obstemp_i.min())-1,int(obstemp_i.max())+1,2))
+    cbar=plt.colorbar(CS,ticks=np.arange(int(obstemp_i.min())-1,int(obstemp_i.max())+1,2))
+    cbar.ax.tick_params(labelsize=20)
+    cbar.ax.set_ylabel('Temperature($^\circ$C)', fontsize=20)
     #plt.scatter(np.array(obsLon),np.array(obsLat), marker='o', c='b', s=5, zorder=10)
     ax3.set_title('Observation_'+season[i+1])
     ax3.annotate('100m depth',xy=(-75.289,35.0395),xytext=(-75.0034,34.9842),arrowprops=dict(facecolor='black'))  
