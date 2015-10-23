@@ -1,2 +1,2 @@
 # turtle-code
-<a href="https://docs.google.com/document/d/1PxNd_XoMr97PssDEKHqRmvL-M_7eTVoHkDGiRzmRpzc/edit">list of programs here</a>
+<a href="https://docs.google.com/document/d/1F2ZIQBOgYj0uhA3nZ2e4JRi1rRpWmJdahbDRdM9zeVo/pub">list of programs here</a>
