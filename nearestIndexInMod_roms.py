@@ -1,5 +1,6 @@
 '''
 Extract new data file named "ctd_good.csv "with new column "modNearestIndex" and "modDepthLayer"
+JiM is suggesting a change
 '''
 import pandas as pd
 import numpy as np
