@@ -1,5 +1,5 @@
 '''
-Extract new data file from "ctd_good.csv" to "ctdWithModTempByDepth.csv"
+get the roms model temp of different depth.
 '''
 import numpy as np
 import pandas as pd
